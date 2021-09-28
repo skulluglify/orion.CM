@@ -4,6 +4,8 @@
 
 // y extension like python
 
+#ifdef __cplusplus
+
 #include <iostream>
 #include <stdio.h>
 #include <thread>
@@ -17,35 +19,41 @@
 
 using namespace std;
 
-// long == signed long int
-// long long == signed long long int
-
-typedef const char* bytes;
+typedef char* bytes;
+typedef char** bytearray;
 typedef short int8;
 typedef int int32;
-typedef long long int64;
+typedef long long int int64;
 typedef unsigned char uint8;
 typedef unsigned short uint16;
 typedef unsigned int uint32;
-typedef unsigned long long uint64;
+typedef unsigned long long int uint64;
 typedef float float32;
 typedef double float64;
 typedef long double float128;
 
-typedef bytes BYTES;
-typedef char CHAR;
-typedef int32 INTEGER;
-typedef uint32 UINTEGER;
-typedef int64 INTEGER64;
-typedef uint64 UINTEGER64;
-typedef float32 FLOAT;
-typedef float64 FLOAT64;
-typedef float128 FLOAT128;
-typedef bool BOOLEAN;
+#define BYTES bytes
+#define BYTEARRAY bytearray
+#define CHAR char
+#define INTEGER int32
+#define UINTEGER uint32
+#define INTEGER64 int64
+#define UINTEGER64 uint64
+#define FLOAT float32
+#define FLOAT64 float64
+#define DOUBLE float64
+#define FLOAT128 float128
+#define BOOL bool
+
+#define i32 int32
+#define ui32 uint32
+#define i64 int64
+#define ui64 uint64
+#define f32 float32
+#define f64 float64
+#define f128 float128
 
 typedef void fn;
-
-// typedef chrono::time_point<chrono::_V2::system_clock, chrono::duration<long int, ratio<1, 1000000000> > > durations;
 
 namespace yelp 
 {
@@ -66,13 +74,13 @@ namespace yelp
     
     uint8 ord (char c);
 
-    string bin (uint8 n);
-
-    // string bin (uint16 n);
-
-    // string bin (uint32 n);
-
-    // string bin (uint64 n);
+	template<typename T>
+	string bin (T n) 
+	{
+	    const size_t N = sizeof(T);
+	    return bitset<N*8>(n).to_string();
+	}
 }
 
 #endif
+#endif /*_YELP_H_*/
