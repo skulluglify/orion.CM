@@ -3,13 +3,13 @@ CFLAGS = -std=gnu++17 -Wall -Wextra -Werror -Wunused-parameter -Wunused-variable
 
 all: build
 
+test: build_test
+	clear && ./build/test.o
+
 debug: build
 	clear && ./build/main.o
 
-build: clean
-	mkdir -p build/extensions
-	mkdir -p build/modules
-	mkdir -p build/wasm
+build: clean playground
 	$(CXX) $(CFLAGS) -o build/yelp.o -c extras/yelp.cpp
 	$(CXX) $(CFLAGS) -o build/orion.o -c extras/orion.cpp
 	$(CXX) $(CFLAGS) -o build/main.o -c main.cpp
@@ -19,6 +19,16 @@ build: clean
 	rm -rf build/main.o build/yelp.o build/orion.o
 	mv build/main.pack.o build/main.o
 	chmod +x ./build/main.o
+
+build_test: clean playground
+	mkdir -p build
+	$(CXX) $(CFLAGS) -o build/test.o extras/test.cpp
+	chmod +x ./build/test.o
+
+playground:
+	mkdir -p build/extensions
+	mkdir -p build/modules
+	mkdir -p build/wasm
 
 clean:
 	rm -rf ./build
