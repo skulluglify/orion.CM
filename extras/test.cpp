@@ -11,9 +11,9 @@ int main(int argc, const char** argv) {
     LinkedList<int> *a = nullptr;
     a = new LinkedList<int>();
 
-    a->add(255);
-    a->add(24);
-    a->add(3);
+    a->push(255);
+    a->push(24);
+    a->push(3);
 
     cout << a->end()->value << endl;
     cout << a->begin()->value << endl;
@@ -37,6 +37,23 @@ int main(int argc, const char** argv) {
 
     MemberList<int>* e = a->get(0);
     cout << a->index(e) << endl;
+
+    int* f = a->to_list();
+
+    a->join(f);
+    a->join(f);
+
+    cout << 88 << endl;
+
+    cout << a->length << endl;
+
+    auto* m = new List<int, 3>();
+    m->push(24);
+
+    cout << m->data[0] << endl;
+    if (!m->data[3]) {
+        cout << "owk wanna be laugh" << endl;
+    }
 
     cout << 55 << endl;
 

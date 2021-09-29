@@ -74,12 +74,12 @@ namespace yelp
     
     uint8 ord (char c);
 
-	template<typename T>
-	string bin (T n) 
-	{
-	    const size_t N = sizeof(T);
-	    return bitset<N*8>(n).to_string();
-	}
+    template<typename T>
+    string bin (T n) 
+    {
+        const size_t N = sizeof(T);
+        return bitset<N*8>(n).to_string();
+    }
 }
 
 #endif
