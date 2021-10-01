@@ -4,7 +4,8 @@ CFLAGS = -std=gnu++17 -Wall -Wextra -Werror -Wunused-parameter -Wunused-variable
 all: build
 
 test: build_test
-	clear && ./build/test.o
+	clear
+	./build/test.stack.o
 
 debug: build
 	clear && ./build/main.o
@@ -22,8 +23,8 @@ build: clean playground
 
 build_test: clean playground
 	mkdir -p build
-	$(CXX) $(CFLAGS) -o build/test.o extras/test.cpp
-	chmod +x ./build/test.o
+	$(CXX) $(CFLAGS) -o build/test.stack.o test/orion.stack.cpp
+	chmod +x ./build/test.stack.o
 
 playground:
 	mkdir -p build/extensions

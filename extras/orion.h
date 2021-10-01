@@ -4,4 +4,8 @@
 
 #include "yelp.h"
 
+#ifdef __cplusplus
+
 #endif
+
+#endif /*_ORION_H_*/

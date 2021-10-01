@@ -21,11 +21,13 @@ struct MemberList {
 
 // push
 // remove
-// set
-// index
+// set | top | bottom
+// index change to find
 // get
 // begin
 // end
+
+// shift || bottom
 
 // concat LinkedList LinkedList
 // join LinkedList | list
@@ -126,7 +128,7 @@ class LinkedList {
             return nullptr;
         }
 
-        size_t index(MemberList<T>* memberlist) {
+        size_t find(MemberList<T>* memberlist) {
             size_t i = 0;
             MemberList<T>* ptrnode = _begin;
             while (true) {

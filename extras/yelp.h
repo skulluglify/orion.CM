@@ -53,7 +53,7 @@ typedef long double float128;
 #define f64 float64
 #define f128 float128
 
-typedef void fn;
+#define fn void
 
 namespace yelp 
 {
