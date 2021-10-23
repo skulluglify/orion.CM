@@ -1,6 +1,9 @@
 #include <iostream>
 #include "../extras/orion/stack.h"
 
+// queue, stack, array, tree
+// sort, reverse, concat
+
 using namespace std;
 
 int main(int argc, const char** argv) {

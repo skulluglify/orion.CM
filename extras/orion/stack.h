@@ -59,24 +59,24 @@ class LinkedList {
 
     private:
 
-        MemberList<T>* top = nullptr;
-        MemberList<T>* bottom = nullptr;
-        MemberList<T>* center = nullptr;
-        size_t members = 0;
-        size_t middle = 0;
+        MemberList<T>* _top = nullptr;
+        MemberList<T>* _bottom = nullptr;
+        MemberList<T>* _center = nullptr;
+        size_t _members = 0;
+        size_t _middle = 0;
 
     public:
 
         MemberList<T>* begin() {
 
-            return *top;
+            return *_top;
 
         }
 
         MemberList<T>* end() {
 
 
-            return *bottom;
+            return *_bottom;
 
         }
 
@@ -92,39 +92,44 @@ class LinkedList {
             ptrnode = new MemberList<T>();
             ptrnode->data = data;
 
-            if (bottom == nullptr) {
-                bottom = ptrnode;
-                center = bottom;
+            if (_bottom == nullptr) {
+                _bottom = ptrnode;
+                _center = _bottom;
             }
 
-            if (top != nullptr) {
-                top->after = ptrnode;
-                ptrnode->before = top;
+            if (_top != nullptr) {
+                _top->after = ptrnode;
+                ptrnode->before = _top;
             }
 
-            size_t m = members / 2;
+            size_t m = _members / 2;
 
-            if (middle < m) {
-                center = center->after;
+            if (_middle < m) {
+                _center = _center->after;
             }
 
-            middle = m;
+            _middle = m;
 
-            top = ptrnode;
+            _top = ptrnode;
 
-            length = ++members;
+            length = ++_members;
             
+        }
+
+        // Queue
+        fn enqueue(T data) {
+            return push(data);
         }
 
 
         MemberList<T>* get_ptr(size_t i) {
 
-            if (members > i) {
+            if (_members > i) {
 
-                if (i < middle) {
+                if (i < _middle) {
 
-                    //top after
-                    MemberList<T>* ptrnode = bottom;
+                    //_top after
+                    MemberList<T>* ptrnode = _bottom;
                     while (ptrnode->after != nullptr && i > 0) {
 
                         ptrnode = ptrnode->after;
@@ -137,9 +142,9 @@ class LinkedList {
                     
                 } else {
 
-                    //center after
-                    i = i - middle;
-                    MemberList<T>* ptrnode = center;
+                    //_center after
+                    i = i - _middle;
+                    MemberList<T>* ptrnode = _center;
                     while (ptrnode->after != nullptr && i > 0) {
 
                         ptrnode = ptrnode->after;
@@ -164,7 +169,7 @@ class LinkedList {
 
         i64 find_ptr(MemberList<T>* memberlist) { // size_t cannot reach -1
             size_t i = 0;
-            MemberList<T>* ptrnode = bottom;
+            MemberList<T>* ptrnode = _bottom;
             while(ptrnode != nullptr) {
                 if (ptrnode == memberlist) 
                     return i;
@@ -176,7 +181,7 @@ class LinkedList {
 
         i64 find(T data) { // size_t cannot reach -1
             size_t i = 0;
-            MemberList<T>* ptrnode = bottom;
+            MemberList<T>* ptrnode = _bottom;
             while(ptrnode != nullptr) {
                 if (ptrnode->data == data) {
                     return i;
@@ -189,12 +194,12 @@ class LinkedList {
 
         bool set(size_t i, T data) {
 
-            if (members > i) {
+            if (_members > i) {
 
-                if (i < middle) {
+                if (i < _middle) {
 
-                    //top after
-                    MemberList<T>* ptrnode = bottom;
+                    //_top after
+                    MemberList<T>* ptrnode = _bottom;
                     while (ptrnode->after != nullptr && i > 0) {
 
                         ptrnode = ptrnode->after;
@@ -208,9 +213,9 @@ class LinkedList {
                     
                 } else {
 
-                    //center after
-                    i = i - middle;
-                    MemberList<T>* ptrnode = center;
+                    //_center after
+                    i = i - _middle;
+                    MemberList<T>* ptrnode = _center;
                     while (ptrnode->after != nullptr && i > 0) {
 
                         ptrnode = ptrnode->after;
@@ -230,7 +235,7 @@ class LinkedList {
 
         bool remove_ptr(MemberList<T>* memberlist) {
 
-            MemberList<T>* ptrnode = bottom;
+            MemberList<T>* ptrnode = _bottom;
             while(ptrnode != nullptr) {
                 if (ptrnode == memberlist) {
                     if (ptrnode->before != nullptr) {
@@ -239,19 +244,19 @@ class LinkedList {
                     if (ptrnode->after != nullptr) {
                         ptrnode->after->before = ptrnode->before;
                     }
-                    if (ptrnode == top) {
-                        top = ptrnode->before;
-                        top->after = nullptr;
+                    if (ptrnode == _top) {
+                        _top = ptrnode->before;
+                        _top->after = nullptr;
                     }
-                    if (ptrnode == bottom) {
-                        bottom = ptrnode->after;
-                        bottom->before = nullptr;
+                    if (ptrnode == _bottom) {
+                        _bottom = ptrnode->after;
+                        _bottom->before = nullptr;
                     }
-                    length = --members;
-                    size_t m = members / 2;
-                    if (middle > m) {
-                        center = center->before;
-                        middle = m;
+                    length = --_members;
+                    size_t m = _members / 2;
+                    if (_middle > m) {
+                        _center = _center->before;
+                        _middle = m;
                     }
                     // free(ptrnode);
                     return 1;
@@ -264,7 +269,7 @@ class LinkedList {
 
         bool remove(T data) {
 
-            MemberList<T>* ptrnode = bottom;
+            MemberList<T>* ptrnode = _bottom;
             while(ptrnode != nullptr) {
                 if (ptrnode->data == data) {
                     if (ptrnode->before != nullptr) {
@@ -273,19 +278,19 @@ class LinkedList {
                     if (ptrnode->after != nullptr) {
                         ptrnode->after->before = ptrnode->before;
                     }
-                    if (ptrnode == top) {
-                        top = ptrnode->before;
-                        top->after = nullptr;
+                    if (ptrnode == _top) {
+                        _top = ptrnode->before;
+                        _top->after = nullptr;
                     }
-                    if (ptrnode == bottom) {
-                        bottom = ptrnode->after;
-                        bottom->before = nullptr;
+                    if (ptrnode == _bottom) {
+                        _bottom = ptrnode->after;
+                        _bottom->before = nullptr;
                     }
-                    length = --members;
-                    size_t m = members / 2;
-                    if (middle > m) {
-                        center = center->before;
-                        middle = m;
+                    length = --_members;
+                    size_t m = _members / 2;
+                    if (_middle > m) {
+                        _center = _center->before;
+                        _middle = m;
                     }
                     // free(ptrnode);
                     return 1;
@@ -304,15 +309,25 @@ class LinkedList {
         // sort
 
         T pop() {
-            T data = top->data;
-            remove_ptr(top);
+            T data = _top->data;
+            remove_ptr(_top);
             return data;
         }
 
         T shift() {
-            T data = bottom->data;
-            remove_ptr(bottom);
+            T data = _bottom->data;
+            remove_ptr(_bottom);
             return data;
+        }
+
+        // Stack
+        T top() {
+        	return _top->data;
+        }        
+
+        // Queue
+        T dequeue() {
+        	return shift();
         }
         
 };
