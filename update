@@ -1,0 +1,8 @@
+#! /usr/bin/env bash
+
+if [ -n "$(which git.np | grep -iv 'not found')" ]; then
+    source git.np
+    git add .
+    git commit -am "noop"
+    git push -f
+fi

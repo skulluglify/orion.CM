@@ -34,6 +34,8 @@ extern "C++" {
                 return 0;
             }
 
+            // 0 - 9 a - z A - Z
+             
             // int to alpha
             static char i2a(int n) {
 
@@ -67,10 +69,7 @@ extern "C++" {
                 return 0;
             }
 
-            // 0 - 9 a - z A - Z
-            // 0 - 9 10 - 35 36 - 61 
             // A - Z a - z 0 - 9
-            // 0 - 25 26 - 51 52 - 61
 
             // int to base64
             static char i2b(int n) {
@@ -94,7 +93,7 @@ extern "C++" {
                 else if (65 <= n && n < 91) return n - 65;
                 else if (n == 43) return 62;
                 else if (n == 47) return 63;
-                return a2i(65);
+                return 0;
             }
 
         public:
