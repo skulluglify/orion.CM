@@ -27,14 +27,116 @@ extern "C++" {
                 
                 size_t count;
 
-                ui32 get_middle_pos(void) {
+                ui32 get_middle_pos(size_t n) {
 
                     ui32 middle;
 
-                    if (count & 1 == 1) middle = ((count -1) / 2) +1;
-                    else middle = count / 2;
+                    if ((n & 1) == 1) middle = ((n -1) / 2) +1;
+                    else middle = n / 2;
 
                     return middle;
+                }
+
+                Node<T>* recursive_middle_search( Node<T> *node, uint32_t countmid, size_t index, size_t length, uint32_t start, bool stop ) {
+
+                    uint32_t middle = get_middle_pos(length);
+                    size_t r = middle + start;
+                    size_t x = index + 1;
+
+                    // LEFT | CENTER | RIGHT
+                    if (length % 2 == 1) {
+
+                        if (x < middle) {
+
+                            // LEFT
+                            if (!stop) return recursive_middle_search(node, countmid, index, middle, 0, true);
+                            else {
+
+                                if (middle == countmid) node = midz;
+
+                                for (uint32_t i = start; i < r; i++) {
+
+                                    if (index != i) node = node->next;
+                                    else break;
+                                }
+                            }
+
+                        }
+
+                        // OPTIMIZE
+                        else if (x == middle) {
+
+                            if (countmid == x) {
+
+                                node = midz;
+                            }
+
+                            else {
+
+                                if (middle == countmid) node = midz;
+
+                                for (uint32_t i = start; i < r; i++) {
+
+                                    node = node->next;
+                                }
+                            }
+                        }
+
+                        else if (middle < x) {
+
+                            // RIGHT
+                            if (!stop) return recursive_middle_search(node, countmid, index, middle, middle -1, true);
+                            else {
+
+                                if (middle == countmid || countmid < r) node = tail;
+                                else node = midz;
+
+                                for (int64_t i = r-1; start <= i; i--) {
+
+                                    if (index != (middle + (size_t)(i))) node = node->previous;
+                                    else break;
+                                }
+                            }
+                        }
+
+                    } else {
+
+                        if (x <= middle) {
+
+                            // LEFT
+                            if (!stop) return recursive_middle_search(node, countmid, index, middle, 0, true);
+                            else {
+
+                                if (middle == countmid) node = midz;
+
+                                for (uint32_t i = start; i < r; i++) {
+
+                                    if (index != i) node = node->next;
+                                    else break;
+                                }
+                            }
+                        }
+
+                        else if (middle < x) {
+
+
+                            // RIGHT
+                            if (!stop) return recursive_middle_search(node, countmid, index, middle, middle -1, true);
+                            else {
+
+                                if (middle == countmid || countmid < r) node = tail;
+                                else node = midz;
+
+                                for (int64_t i = r-1; start <= i; i--) {
+
+                                    if (index != (middle + (size_t)(i))) node = node->previous;
+                                    else break;
+                                }
+                            }
+                        }
+                    }
+
+                    return node;
                 }
 
             public:
@@ -73,12 +175,10 @@ extern "C++" {
                         tail = node;
 
                         // update midz
-                        // if (count & 1 == 1) middle = (count -1) / 2;
-                        // else middle = count / 2;
-                        // midz = getPtr(middle);
                         if (count % 2 == 0) {
 
                             midz = midz->next;
+
                         }
 
                     }
@@ -90,9 +190,10 @@ extern "C++" {
                 T get(size_t index) {
 
                     Node<T> *node;
-                    uint32_t middle;
 
                     node = head;
+
+                    uint32_t countmid = get_middle_pos(count);
 
                     // while (index > 0) {
 
@@ -102,40 +203,7 @@ extern "C++" {
                         
                     // }
 
-                    middle = get_middle_pos();
-
-                    // count % 2 == 0, <= middle, middle < | default
-                    // count % 2 > 0, < middle, middle <=
-
-                    if (middle > 0) {
-
-                        // middle > 0
-                        // size > 1
-                        // index available > 0
-                        if (index <= middle) {
-
-                            // middle / 2 
-                            // 0 - x - middle
-                            // can cut off two position bcs have previous, and next
-                            
-                        } else 
-                        if (middle < index) {
-
-                            // middle / 2 
-                            // middle - x - last
-                            // can cut off two position bcs have previous, and next
-                            
-                        }
-                        
-                    }
-                    else {
-
-                        // middle == 0
-                        // size 1
-                        // index available 0
-                        if (index != 0) return 0;
-                        
-                    }
+                    node = recursive_middle_search(node, countmid, index, count, 0, false);
 
                     if (node != nullptr) return node->data;
 

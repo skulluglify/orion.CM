@@ -98,6 +98,11 @@ extern "C++" {
 
         public:
 
+            // TODOs
+            // base64
+            // 256 -> 128
+            // 128 -> 256
+
             template<int N>
             static ui8* int2str(ui64 n) {
 

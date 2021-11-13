@@ -92,6 +92,15 @@ int main(int argc, const char** argv) {
     // -------------------
 
     std::cout << ll->size() << std::endl;
+    
+    std::cout << (int)(ls->get(0)) << std::endl;
+    std::cout << (int)(ls->get(1)) << std::endl;
+    std::cout << (int)(ls->get(2)) << std::endl;
+    std::cout << (int)(ls->get(3)) << std::endl;
+    std::cout << (int)(ls->get(4)) << std::endl;
+    std::cout << (int)(ls->get(5)) << std::endl;
+    std::cout << (int)(ls->get(6)) << std::endl;
+    std::cout << (int)(ls->get(7)) << std::endl;
 
     Ye::printStr2Int<6>(t);
 
