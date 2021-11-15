@@ -225,7 +225,7 @@ extern "C++" {
 
                         ui32 middle = get_middle_pos(count) - 1;
                         
-                        LOG("middle " << middle)
+                        // LOG("middle " << middle)
 
                         if (index == 0) {
 
