@@ -48,14 +48,14 @@ extern "C++" {
                     Node<T> *node;
                     Node<T> *begin;
                     Node<T> *end;
+                    uint32_t middle, i;
                     node = new Node<T>();
                     begin = new Node<T>();
                     end = new Node<T>();
                     begin = nodeDistance->begin;
                     end = nodeDistance->end;
-                    uint32_t middle, i;
                     middle = get_middle_pos(size) - 1;
-                    if ((size & 1) == 1) {
+                    if ((size & 1) == 1) { // ODD
                         if (index < middle) {
                             node = begin;
                             i = 0;
@@ -73,7 +73,7 @@ extern "C++" {
                                 i++;
                             }
                         }
-                    } else {
+                    } else { // EVEN
                         if (index <= middle) {
                             node = begin;
                             i = 0;
@@ -84,7 +84,7 @@ extern "C++" {
                             }
                         }
                     }
-                    if (middle < index) {
+                    if (middle < index) { // ODD | EVEN AS SAME
                         node = end;
                         i = size - 1;
                         while (middle < i) {
@@ -99,11 +99,11 @@ extern "C++" {
                 Node<T> *middle_search( size_t index ) {
                     Node<T> *node;
                     NodeDistance<T> *nodeDistance;
+                    uint32_t middle, size;
                     node = new Node<T>();
                     nodeDistance = new NodeDistance<T>();
-                    uint32_t middle, size;
                     middle = get_middle_pos(count) - 1;
-                    if ((count & 1) == 1) {
+                    if ((count & 1) == 1) { // ODD
                         size = middle;
                         if (index < middle) {
                             nodeDistance->begin = head;
@@ -113,7 +113,7 @@ extern "C++" {
                         if (index == middle) {
                             node = midz;
                         }
-                    } else {
+                    } else { // EVEN
                         size = middle + 1;
                         if (index <= middle) {
                             nodeDistance->begin = head;
@@ -121,7 +121,7 @@ extern "C++" {
                             node = middle_search_child(size, index, nodeDistance);
                         }
                     }
-                    if (middle < index) {
+                    if (middle < index) { // ODD | EVEN AS SAME
                         nodeDistance->begin = midz->next;
                         nodeDistance->end = tail;
                         node = middle_search_child(size, index - middle - 1, nodeDistance);
