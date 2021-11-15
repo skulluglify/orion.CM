@@ -88,6 +88,14 @@ int main(int argc, const char** argv) {
 
     ls->push(12);
 
+    ls->set(4, 64);
+
+    // ls->remove(0);
+    // ls->remove(4);
+    // ls->remove(1);
+    // ls->remove(2);
+    // ls->remove(4);
+
 
     // -------------------
 
