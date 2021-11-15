@@ -52,10 +52,10 @@ int main(int argc, const char** argv) {
     ll->push(3);
     ll->push(6);
     ll->push(9);
-    ll->push(1);
-    ll->push(5);
-    ll->push(8);
-    ll->push(7);
+    // ll->push(1);
+    // ll->push(5);
+    // ll->push(8);
+    // ll->push(7);
 
     std::cout << (size_t)(ll) << std::endl;
 
@@ -92,15 +92,11 @@ int main(int argc, const char** argv) {
     // -------------------
 
     std::cout << ll->size() << std::endl;
-    
-    std::cout << (int)(ls->get(0)) << std::endl;
-    std::cout << (int)(ls->get(1)) << std::endl;
-    std::cout << (int)(ls->get(2)) << std::endl;
-    std::cout << (int)(ls->get(3)) << std::endl;
-    std::cout << (int)(ls->get(4)) << std::endl;
-    std::cout << (int)(ls->get(5)) << std::endl;
-    std::cout << (int)(ls->get(6)) << std::endl;
-    std::cout << (int)(ls->get(7)) << std::endl;
+
+    for (size_t i = 0; i < ls->size(); i++) {
+
+        std::cout << (int)(ls->get(i)) << std::endl;
+    }
 
     Ye::printStr2Int<6>(t);
 
