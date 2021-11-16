@@ -430,25 +430,46 @@ extern "C++" {
 
                     Node* node;
                     Node* safe;
+                    Node* copy;
                     Node* prev;
                     Node* swap;
 
-                    node = head;
                     safe = head;
+                    copy = head;
+                    node = nullptr;
                     prev = nullptr;
                     swap = nullptr;
 
-                    while (safe != nullptr) {
+                    while (true) {
 
-                        prev = safe;
-                        node = safe->next;
+                        prev = copy;
+                        node = prev->next;
+
+                        // LOG("check at: " << (int)prev->data)
+
+                        if (node == nullptr) break;
+
                         safe = node->next;
+                        copy = safe;
+
                         node->next = prev;
+                        node->previous = safe;
+                        
+                        swap = prev->next;
+                        prev->next = prev->previous;
+                        prev->previous = swap;
                     }
 
                     swap = head;
                     head = tail;
                     tail = swap;
+
+                    if ((count & 1) == 0) midz = midz->previous;
+
+                    head->next = head->previous;
+                    head->previous = nullptr;
+                    tail->previous = tail->next;
+                    tail->next = nullptr;
                 }
 
                 // slice

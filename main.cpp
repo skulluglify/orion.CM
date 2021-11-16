@@ -123,7 +123,9 @@ int main(int argc, const char** argv) {
     le->pop();
     le->remove(4);
 
-    ls->reverse();
+    le->reverse();
+
+    std::cout << "===" << std::endl;
 
     for (size_t i = 0; i < le->size(); i++) {
 
@@ -131,6 +133,8 @@ int main(int argc, const char** argv) {
 
         if (rt.type == "ok") std::cout << (int)(rt.value) << std::endl;
     }
+
+    std::cout << "===" << std::endl;
 
     Ye::printStr2Int<6>(t);
 
