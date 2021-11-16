@@ -45,9 +45,9 @@ int main(int argc, const char** argv) {
 
     printVector<f32>(*vec);
 
-    Yo::LinkedList<i8> *ll;
+    Ex::List<i8> *ll;
 
-    ll = new Yo::LinkedList<i8>();
+    ll = new Ex::List<i8>();
 
     ll->push(3);
     ll->push(6);
@@ -80,9 +80,9 @@ int main(int argc, const char** argv) {
 
     // int to mem to cast
 
-    Yo::LinkedList<i8> *ls;
+    Ex::List<i8> *ls;
 
-    ls = Ye::castInt<Yo::LinkedList<i8>>(n);
+    ls = Ye::castInt<Ex::List<i8>>(n);
 
     LOG(ls)
 
@@ -103,7 +103,31 @@ int main(int argc, const char** argv) {
 
     for (size_t i = 0; i < ls->size(); i++) {
 
-        std::cout << (int)(ls->get(i)) << std::endl;
+        std::cout << (int)(ls->get(i).value) << std::endl;
+    }
+
+    Ex::List<i8> *lx;
+
+    lx = ls->copy();
+
+    for (size_t i = 0; i < lx->size(); i++) {
+
+        std::cout << (int)(lx->get(i).value) << std::endl;
+    }
+
+    Ex::List<i8> *le;
+
+    le = ls->concat(ls, lx);
+
+    le->shift();
+    le->pop();
+    le->remove(4);
+
+    for (size_t i = 0; i < le->size(); i++) {
+
+        Ex::ReturnType<i8> rt = le->get(i);
+
+        if (rt.type == "ok") std::cout << (int)(rt.value) << std::endl;
     }
 
     Ye::printStr2Int<6>(t);

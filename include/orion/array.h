@@ -2,6 +2,7 @@
 #ifndef __ORION_ARRAY__
 #define __ORION_ARRAY__
 
+#include<string>
 #include"dtype.h"
 #include"debug.h"
 
@@ -9,48 +10,64 @@
 
 extern "C++" {
 
-    namespace Yo {
+
+    namespace Ex {
 
         template<typename T>
-        struct Node {
-            struct Node *previous; T data; struct Node *next;
-            Node() {}
-            ~Node() {}
+        struct ReturnType {
+
+            std::string type;
+            T value;
+
         };
 
         template<typename T>
-        struct NodeDistance {
-            Node<T> *begin; Node<T> *end;
-            NodeDistance() {}
-            ~NodeDistance() {}
-        };
-
-        template<typename T>
-        class LinkedList {
+        class List {
 
             private:
 
-                Node<T> *head;
-                Node<T> *midz;
-                Node<T> *tail;
+                struct Node {
+                    
+                    struct Node* previous;
+                    struct Node* next;
+                    
+                    T data;
+
+                    // constructor 
+                    Node() {}
+                    ~Node() {}
+                };
+
+                struct NodeIterator { // virtual, and not real case
+                    
+                    Node* begin;
+                    Node* end;
+
+                    // constructor 
+                    NodeIterator() {}
+                    ~NodeIterator() {}
+                };
+
+                Node* head;
+                Node* midz;
+                Node* tail;
                 
                 size_t count;
 
-                ui32 get_middle_pos(size_t size) {
-                    if ((size & 1) == 1) return (ui32)((size + 1) / 2);
-                    return (ui32)(size / 2);
+                size_t get_middle_pos(size_t size) {
+                    return (size & 1) == 1 ? (size + 1) / 2 : size / 2;
                 }
 
-                Node<T> *middle_search_child(uint32_t size, size_t index, NodeDistance<T> *nodeDistance) {
-                    Node<T> *node;
-                    Node<T> *begin;
-                    Node<T> *end;
+                Node* middle_search_child(uint32_t size, size_t index, NodeIterator nodeIterator) {
+                    Node* node;
+                    Node* begin;
+                    Node* end;
                     uint32_t middle, i;
-                    node = new Node<T>();
-                    begin = new Node<T>();
-                    end = new Node<T>();
-                    begin = nodeDistance->begin;
-                    end = nodeDistance->end;
+                    node = new Node();
+                    begin = new Node();
+                    end = new Node();
+                    begin = nodeIterator.begin;
+                    end = nodeIterator.end;
                     middle = get_middle_pos(size) - 1;
                     if (index <= middle) {  // ODD | EVEN AS SAME MEAN
                         node = begin;
@@ -72,31 +89,30 @@ extern "C++" {
                     return node;
                 }
 
-                Node<T> *middle_search(size_t index) {
-                    Node<T> *node;
-                    NodeDistance<T> *nodeDistance;
+                Node* middle_search(size_t index) {
+                    Node* node;
+                    NodeIterator nodeIterator;
                     uint32_t middle, size;
-                    node = new Node<T>();
-                    nodeDistance = new NodeDistance<T>();
+                    node = new Node();
                     middle = get_middle_pos(count) - 1;
                     size = 0;
-                    nodeDistance->begin = head; // start | middle as same
+                    nodeIterator.begin = head; // start | middle as same
                     if (index <= middle) {
                         if ((count & 1) == 1) { // ODD
                             size = middle;
                             if (index < middle) {
-                                nodeDistance->end = midz->previous;
+                                nodeIterator.end = midz->previous;
                             }
                             if (index == middle) return midz;
                         } else { // EVEN
                             size = middle + 1;
-                            nodeDistance->end = midz;
+                            nodeIterator.end = midz;
                         }
-                        node = middle_search_child(size, index, nodeDistance);
+                        node = middle_search_child(size, index, nodeIterator);
                     } else if (middle < index) { // ODD | EVEN AS SAME
-                        nodeDistance->begin = midz->next;
-                        nodeDistance->end = tail;
-                        node = middle_search_child(size, index - middle - 1, nodeDistance);
+                        nodeIterator.begin = midz->next;
+                        nodeIterator.end = tail;
+                        node = middle_search_child(size, index - middle - 1, nodeIterator);
                     }
                     return node;
                 }
@@ -105,8 +121,8 @@ extern "C++" {
 
                 void update_middle_reduce() { // if middle loss
 
-                    ui32 vmiddle = get_middle_pos(count - 1) - 1; // virtual
-                    ui32 middle = get_middle_pos(count) - 1;
+                    size_t vmiddle = get_middle_pos(count - 1) - 1; // virtual
+                    size_t middle = get_middle_pos(count) - 1;
 
                     if (vmiddle == middle) {
                         midz = midz->next;
@@ -118,8 +134,8 @@ extern "C++" {
 
                 void update_middle_reduce_right() { // if right loss
 
-                    ui32 vmiddle = get_middle_pos(count - 1) - 1; // virtual
-                    ui32 middle = get_middle_pos(count) - 1;
+                    size_t vmiddle = get_middle_pos(count - 1) - 1; // virtual
+                    size_t middle = get_middle_pos(count) - 1;
 
                     if (vmiddle == (middle - 1)) {
                         midz = midz->previous;
@@ -128,8 +144,8 @@ extern "C++" {
 
                 void update_middle_reduce_left() { // if left loss
 
-                    ui32 vmiddle = get_middle_pos(count - 1) - 1; // virtual
-                    ui32 middle = get_middle_pos(count) - 1;
+                    size_t vmiddle = get_middle_pos(count - 1) - 1; // virtual
+                    size_t middle = get_middle_pos(count) - 1;
 
                     if (vmiddle == middle) {
                         midz = midz->next;
@@ -140,7 +156,7 @@ extern "C++" {
 
             public:
 
-                LinkedList() {
+                List() {
 
                     head = nullptr;
                     midz = nullptr;
@@ -148,11 +164,11 @@ extern "C++" {
                     count = 0;
                 }
                 
-                // ~LinkedList() {}
+                // ~List() {}
 
                 void push(T data) {
-                    Node<T> *node;
-                    node = new Node<T>();
+                    Node* node;
+                    node = new Node();
                     node->data = data;
                     if (head == nullptr) {
                         head = node;
@@ -170,8 +186,10 @@ extern "C++" {
                 }
 
                 // TODOs
-                T get(size_t index) {
-                    Node<T> *node;
+                ReturnType<T> get(size_t index) {
+                    
+                    Node* node;
+                    ReturnType<T> returnType;
                     // node = head;
                     if (index < count) {
 
@@ -182,13 +200,18 @@ extern "C++" {
 
                         node = middle_search(index); // 4 virtual abstract
 
-                        if (node != nullptr) return node->data;
+                        if (node != nullptr) {
+                            returnType.type = "ok";
+                            returnType.value = node->data;
+                            return returnType;
+                        };
                     }
-                    return 0;
+                    returnType.type = "err";
+                    return returnType;
                 }
 
                 void set(size_t index, T data) {
-                    Node<T> *node;
+                    Node* node;
                     // node = head;
                     if (index < count) {
 
@@ -211,7 +234,7 @@ extern "C++" {
 
                 // TODOs
                 void remove(size_t index) {
-                    Node<T> *node;
+                    Node* node;
                     // node = head;
                     if (index < count) {
 
@@ -223,10 +246,12 @@ extern "C++" {
                         node = middle_search(index); // 4 virtual abstract
 
 
-                        ui32 middle = get_middle_pos(count) - 1;
+                        size_t middle = get_middle_pos(count) - 1;
                         
                         // LOG("middle " << middle)
 
+                        // head as same shift
+                        // ======================================================
                         if (index == 0) {
 
                             if (head->next != nullptr) {
@@ -236,10 +261,13 @@ extern "C++" {
                             }
 
                         }
+                        // ======================================================
 
+                        // middle
+                        // ======================================================
                         else if (index == (size_t)(middle)) {    
 
-                            Node<T> *displace;
+                            Node* displace;
                             displace = midz;
                             if (displace->previous != nullptr && displace->next != nullptr) {
                                 update_middle_reduce();
@@ -248,7 +276,10 @@ extern "C++" {
                                 free(displace);
                             }
                         }
+                        // ======================================================
 
+                        // tail as same pop
+                        // ======================================================
                         else if (index == (count - 1)) {
 
                             if (tail->previous != nullptr) {
@@ -257,6 +288,7 @@ extern "C++" {
                                 free(tail->next);
                             }
                         }
+                        // ======================================================
 
                         else {
 
@@ -284,8 +316,116 @@ extern "C++" {
                     }
                 }
 
+                // copy
+                List* copy() {
 
-                // concat
+                    Node* node;
+                    List* arrayCopy;
+                    
+                    node = head;
+                    arrayCopy = new List();
+
+                    while (node != nullptr) {
+
+                        arrayCopy->push(node->data);
+
+                        node = node->next;
+                    }
+
+                    return arrayCopy;
+                }
+
+                List* concat(List* A, List* B) {
+
+                    Node* node;
+                    List* arrayCopy;
+
+                    node = &B->bottom();
+                    arrayCopy = A->copy();
+
+                    while (node != nullptr) {
+
+                        arrayCopy->push(node->data);
+
+                        node = node->next;
+                    }
+
+                    return arrayCopy;
+                }
+
+                Node& bottom() {
+
+                    return *head;
+                }
+
+                Node& top() {
+
+                    return *tail;
+                }
+
+                T shift() {
+
+                    T data;
+                    Node* node;
+
+                    node = head;
+                    data = node->data;
+                    head = node->next;
+                    head->previous = nullptr;
+
+                    update_middle_reduce_left();
+
+                    free(node);
+
+                    count--;
+
+                    return data;
+                }
+
+                T pop() {
+
+                    T data;
+                    Node* node;
+                    
+                    node = tail;
+                    data = node->data;
+                    tail = node->previous;
+                    tail->next = nullptr;
+
+                    update_middle_reduce_right();
+
+                    free(node);
+
+                    count--;
+
+                    return data;
+                }
+
+                ReturnType<size_t> indexOf(T data) {
+
+                    size_t index;
+                    Node* node;
+                    ReturnType<size_t> returnType;
+
+                    index = 0;
+                    node = head;
+                    while (node != nullptr) {
+
+                        if (node->data == data) {
+
+                            returnType.type = "ok";
+                            returnType.value = index;
+                        }
+
+                        node = node->next;
+                        index++;
+                    }
+
+                    returnType.type = "ok";
+
+                    return returnType;
+                }
+
                 // pop
                 // shift
                 // indexOf
