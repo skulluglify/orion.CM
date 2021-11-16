@@ -123,6 +123,8 @@ int main(int argc, const char** argv) {
     le->pop();
     le->remove(4);
 
+    ls->reverse();
+
     for (size_t i = 0; i < le->size(); i++) {
 
         Ex::ReturnType<i8> rt = le->get(i);

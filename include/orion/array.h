@@ -426,11 +426,33 @@ extern "C++" {
                     return returnType;
                 }
 
-                // pop
-                // shift
-                // indexOf
+                void reverse() {
+
+                    Node* node;
+                    Node* safe;
+                    Node* prev;
+                    Node* swap;
+
+                    node = head;
+                    safe = head;
+                    prev = nullptr;
+                    swap = nullptr;
+
+                    while (safe != nullptr) {
+
+                        prev = safe;
+                        node = safe->next;
+                        safe = node->next;
+                        node->next = prev;
+                    }
+
+                    swap = head;
+                    head = tail;
+                    tail = swap;
+                }
+
                 // slice
-                // splic
+                // splice
                 // put | put ( index, value ) | menyisipkan value
         };
 
