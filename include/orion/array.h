@@ -206,7 +206,9 @@ extern "C++" {
                             return returnType;
                         };
                     }
+
                     returnType.type = "err";
+                    
                     return returnType;
                 }
 
@@ -421,7 +423,7 @@ extern "C++" {
                         index++;
                     }
 
-                    returnType.type = "ok";
+                    returnType.type = "err";
 
                     return returnType;
                 }
