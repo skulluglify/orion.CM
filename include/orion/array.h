@@ -52,13 +52,13 @@ extern "C++" {
                 Node* midz;
                 Node* tail;
                 
-                size_t count;
+                ui64 count;
 
-                size_t get_middle_pos(size_t size) {
+                ui64 get_middle_pos(ui64 size) {
                     return (size & 1) == 1 ? (size + 1) / 2 : size / 2;
                 }
 
-                Node* middle_search_child(uint32_t size, size_t index, NodeIterator nodeIterator) {
+                Node* middle_search_child(uint32_t size, ui64 index, NodeIterator nodeIterator) {
                     Node* node;
                     Node* begin;
                     Node* end;
@@ -89,7 +89,7 @@ extern "C++" {
                     return node;
                 }
 
-                Node* middle_search(size_t index) {
+                Node* middle_search(ui64 index) {
                     Node* node;
                     NodeIterator nodeIterator;
                     uint32_t middle, size;
@@ -121,8 +121,8 @@ extern "C++" {
 
                 void update_middle_reduce() { // if middle loss
 
-                    size_t vmiddle = get_middle_pos(count - 1) - 1; // virtual
-                    size_t middle = get_middle_pos(count) - 1;
+                    ui64 vmiddle = get_middle_pos(count - 1) - 1; // virtual
+                    ui64 middle = get_middle_pos(count) - 1;
 
                     if (vmiddle == middle) {
                         midz = midz->next;
@@ -134,8 +134,8 @@ extern "C++" {
 
                 void update_middle_reduce_right() { // if right loss
 
-                    size_t vmiddle = get_middle_pos(count - 1) - 1; // virtual
-                    size_t middle = get_middle_pos(count) - 1;
+                    ui64 vmiddle = get_middle_pos(count - 1) - 1; // virtual
+                    ui64 middle = get_middle_pos(count) - 1;
 
                     if (vmiddle == (middle - 1)) {
                         midz = midz->previous;
@@ -144,8 +144,8 @@ extern "C++" {
 
                 void update_middle_reduce_left() { // if left loss
 
-                    size_t vmiddle = get_middle_pos(count - 1) - 1; // virtual
-                    size_t middle = get_middle_pos(count) - 1;
+                    ui64 vmiddle = get_middle_pos(count - 1) - 1; // virtual
+                    ui64 middle = get_middle_pos(count) - 1;
 
                     if (vmiddle == middle) {
                         midz = midz->next;
@@ -186,7 +186,7 @@ extern "C++" {
                 }
 
                 // TODOs
-                ReturnType<T> get(size_t index) {
+                ReturnType<T> get(ui64 index) {
                     
                     Node* node;
                     ReturnType<T> returnType;
@@ -210,7 +210,7 @@ extern "C++" {
                     return returnType;
                 }
 
-                void set(size_t index, T data) {
+                void set(ui64 index, T data) {
                     Node* node;
                     // node = head;
                     if (index < count) {
@@ -227,13 +227,13 @@ extern "C++" {
                 }
                 
                 // length & middle pos
-                size_t size(void) {
+                ui64 size(void) {
 
                     return count;
                 }
 
                 // TODOs
-                void remove(size_t index) {
+                void remove(ui64 index) {
                     Node* node;
                     // node = head;
                     if (index < count) {
@@ -246,7 +246,7 @@ extern "C++" {
                         node = middle_search(index); // 4 virtual abstract
 
 
-                        size_t middle = get_middle_pos(count) - 1;
+                        ui64 middle = get_middle_pos(count) - 1;
                         
                         // LOG("middle " << middle)
 
@@ -265,7 +265,7 @@ extern "C++" {
 
                         // middle
                         // ======================================================
-                        else if (index == (size_t)(middle)) {    
+                        else if (index == (ui64)(middle)) {    
 
                             Node* displace;
                             displace = midz;
@@ -401,11 +401,11 @@ extern "C++" {
                     return data;
                 }
 
-                ReturnType<size_t> indexOf(T data) {
+                ReturnType<ui64> indexOf(T data) {
 
-                    size_t index;
+                    ui64 index;
                     Node* node;
-                    ReturnType<size_t> returnType;
+                    ReturnType<ui64> returnType;
 
                     index = 0;
                     node = head;
