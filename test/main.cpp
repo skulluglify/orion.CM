@@ -3,7 +3,7 @@
 using namespace std;
 #define LOG(x) cout << x << endl;
 
-long double pow(int n, int e) {
+long double pow(int n, int e) { // get more trouble
 
     if (e == 1) return n;
     return n * pow(n, e - 1);

@@ -171,14 +171,24 @@ extern "C++" {
                     arrayCopy = &(current.Copy());
                     arraySafe = &ConcatConceptMultiply(arguments...);
 
-                    for (ui64 i = 0; i < arraySafe->Size(); i++) {
+                    // for (ui64 i = 0; i < arraySafe->Size(); i++) {
 
-                        ReturnType<T> returnType;
-                        returnType = arraySafe->GetItem(i);
+                    //     ReturnType<T> returnType;
+                    //     returnType = arraySafe->GetItem(i);
 
-                        if (returnType.type == RETURN_TYPE_OK)
-                            arrayCopy->Push(returnType.value);
+                    //     if (returnType.type == RETURN_TYPE_OK)
+                    //         arrayCopy->Push(returnType.value);
                     
+                    // }
+
+                    Node* node;
+                    node = &arraySafe->Bottom();
+
+                    while (node != nullptr) {
+
+                        arrayCopy->Push(node->data);
+
+                        node = node->next;
                     }
 
                     return *arrayCopy;
@@ -524,7 +534,7 @@ extern "C++" {
 
                     return false;
                 }
-                
+
                 // slice (index)start, (count)length
                 // splice (index)start, (count)delete, (data)put
         };
