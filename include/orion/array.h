@@ -16,10 +16,13 @@ extern "C++" {
         template<typename T>
         struct ReturnType {
 
-            std::string type;
+            ui8 type;
             T value;
 
         };
+
+        const ui8 RETURN_TYPE_OK = 0x01;
+        const ui8 RETURN_TYPE_FAIL = 0x00;
 
         template<typename T>
         class List {
@@ -54,11 +57,11 @@ extern "C++" {
                 
                 ui64 count;
 
-                ui64 get_middle_pos(ui64 size) {
-                    return (size & 1) == 1 ? (size + 1) / 2 : size / 2;
+                ui64 GetMiddlePos(ui64 Size) {
+                    return (Size & 1) == 1 ? (Size + 1) / 2 : Size / 2;
                 }
 
-                Node* middle_search_child(uint32_t size, ui64 index, NodeIterator nodeIterator) {
+                Node* MiddleSearchChild(uint32_t Size, ui64 index, NodeIterator nodeIterator) {
                     Node* node;
                     Node* begin;
                     Node* end;
@@ -68,7 +71,7 @@ extern "C++" {
                     end = new Node();
                     begin = nodeIterator.begin;
                     end = nodeIterator.end;
-                    middle = get_middle_pos(size) - 1;
+                    middle = GetMiddlePos(Size) - 1;
                     if (index <= middle) {  // ODD | EVEN AS SAME MEAN
                         node = begin;
                         i = 0;
@@ -79,7 +82,7 @@ extern "C++" {
                         }
                     } else if (middle < index) { // ODD | EVEN AS SAME
                         node = end;
-                        i = size - 1;
+                        i = Size - 1;
                         while (middle < i) {
                             if (index == i) break;
                             node = node->previous;
@@ -89,40 +92,40 @@ extern "C++" {
                     return node;
                 }
 
-                Node* middle_search(ui64 index) {
+                Node* MiddleSearch(ui64 index) {
                     Node* node;
                     NodeIterator nodeIterator;
-                    uint32_t middle, size;
+                    uint32_t middle, Size;
                     node = new Node();
-                    middle = get_middle_pos(count) - 1;
-                    size = 0;
+                    middle = GetMiddlePos(count) - 1;
+                    Size = 0;
                     nodeIterator.begin = head; // start | middle as same
                     if (index <= middle) {
                         if ((count & 1) == 1) { // ODD
-                            size = middle;
+                            Size = middle;
                             if (index < middle) {
                                 nodeIterator.end = midz->previous;
                             }
                             if (index == middle) return midz;
                         } else { // EVEN
-                            size = middle + 1;
+                            Size = middle + 1;
                             nodeIterator.end = midz;
                         }
-                        node = middle_search_child(size, index, nodeIterator);
+                        node = MiddleSearchChild(Size, index, nodeIterator);
                     } else if (middle < index) { // ODD | EVEN AS SAME
                         nodeIterator.begin = midz->next;
                         nodeIterator.end = tail;
-                        node = middle_search_child(size, index - middle - 1, nodeIterator);
+                        node = MiddleSearchChild(Size, index - middle - 1, nodeIterator);
                     }
                     return node;
                 }
 
                 // ********************** FOR REMOVE FUN ********************** //
 
-                void update_middle_reduce() { // if middle loss
+                void UpdateMiddleReduce() { // if middle loss
 
-                    ui64 vmiddle = get_middle_pos(count - 1) - 1; // virtual
-                    ui64 middle = get_middle_pos(count) - 1;
+                    ui64 vmiddle = GetMiddlePos(count - 1) - 1; // virtual
+                    ui64 middle = GetMiddlePos(count) - 1;
 
                     if (vmiddle == middle) {
                         midz = midz->next;
@@ -132,20 +135,20 @@ extern "C++" {
                     }
                 }
 
-                void update_middle_reduce_right() { // if right loss
+                void UpdateMiddleReduceRight() { // if right loss
 
-                    ui64 vmiddle = get_middle_pos(count - 1) - 1; // virtual
-                    ui64 middle = get_middle_pos(count) - 1;
+                    ui64 vmiddle = GetMiddlePos(count - 1) - 1; // virtual
+                    ui64 middle = GetMiddlePos(count) - 1;
 
                     if (vmiddle == (middle - 1)) {
                         midz = midz->previous;
                     }
                 }
 
-                void update_middle_reduce_left() { // if left loss
+                void UpdateMiddleReduceLeft() { // if left loss
 
-                    ui64 vmiddle = get_middle_pos(count - 1) - 1; // virtual
-                    ui64 middle = get_middle_pos(count) - 1;
+                    ui64 vmiddle = GetMiddlePos(count - 1) - 1; // virtual
+                    ui64 middle = GetMiddlePos(count) - 1;
 
                     if (vmiddle == middle) {
                         midz = midz->next;
@@ -153,6 +156,33 @@ extern "C++" {
                 }
 
                 // ********************** FOR REMOVE FUN ********************** //
+
+                List& ConcatConceptMultiply(void) {
+
+                    return *(new List());
+                }
+
+                template<typename... Args>
+                List& ConcatConceptMultiply(List& current, Args&&... arguments) {
+
+                    List* arrayCopy;
+                    List* arraySafe; // but not safe anymore
+
+                    arrayCopy = &(current.Copy());
+                    arraySafe = &ConcatConceptMultiply(arguments...);
+
+                    for (ui64 i = 0; i < arraySafe->Size(); i++) {
+
+                        ReturnType<T> returnType;
+                        returnType = arraySafe->GetItem(i);
+
+                        if (returnType.type == RETURN_TYPE_OK)
+                            arrayCopy->Push(returnType.value);
+                    
+                    }
+
+                    return *arrayCopy;
+                }
 
             public:
 
@@ -166,7 +196,7 @@ extern "C++" {
                 
                 // ~List() {}
 
-                void push(T data) {
+                void Push(T data) {
                     Node* node;
                     node = new Node();
                     node->data = data;
@@ -186,7 +216,7 @@ extern "C++" {
                 }
 
                 // TODOs
-                ReturnType<T> get(ui64 index) {
+                ReturnType<T> GetItem(ui64 index) {
                     
                     Node* node;
                     ReturnType<T> returnType;
@@ -198,21 +228,21 @@ extern "C++" {
                             // index--;
                         // }
 
-                        node = middle_search(index); // 4 virtual abstract
+                        node = MiddleSearch(index); // 4 virtual abstract
 
                         if (node != nullptr) {
-                            returnType.type = "ok";
+                            returnType.type = RETURN_TYPE_OK;
                             returnType.value = node->data;
                             return returnType;
                         };
                     }
 
-                    returnType.type = "err";
+                    returnType.type = RETURN_TYPE_FAIL;
                     
                     return returnType;
                 }
 
-                void set(ui64 index, T data) {
+                void SetItem(ui64 index, T data) {
                     Node* node;
                     // node = head;
                     if (index < count) {
@@ -222,20 +252,20 @@ extern "C++" {
                             // index--;
                         // }
 
-                        node = middle_search(index); // 4 virtual abstract
+                        node = MiddleSearch(index); // 4 virtual abstract
 
                         if (node != nullptr) node->data = data;
                     }
                 }
                 
                 // length & middle pos
-                ui64 size(void) {
+                ui64 Size(void) {
 
                     return count;
                 }
 
                 // TODOs
-                void remove(ui64 index) {
+                void Remove(ui64 index) {
                     Node* node;
                     // node = head;
                     if (index < count) {
@@ -245,20 +275,20 @@ extern "C++" {
                             // index--;
                         // }
 
-                        node = middle_search(index); // 4 virtual abstract
+                        node = MiddleSearch(index); // 4 virtual abstract
 
 
-                        ui64 middle = get_middle_pos(count) - 1;
+                        ui64 middle = GetMiddlePos(count) - 1;
                         
                         // LOG("middle " << middle)
 
-                        // head as same shift
+                        // head as same Shift
                         // ======================================================
                         if (index == 0) {
 
                             if (head->next != nullptr) {
                                 head = head->next;
-                                update_middle_reduce_left();
+                                UpdateMiddleReduceLeft();
                                 free(head->previous);
                             }
 
@@ -272,7 +302,7 @@ extern "C++" {
                             Node* displace;
                             displace = midz;
                             if (displace->previous != nullptr && displace->next != nullptr) {
-                                update_middle_reduce();
+                                UpdateMiddleReduce();
                                 displace->next->previous = displace->previous;
                                 displace->previous->next = displace->next;
                                 free(displace);
@@ -280,13 +310,13 @@ extern "C++" {
                         }
                         // ======================================================
 
-                        // tail as same pop
+                        // tail as same Pop
                         // ======================================================
                         else if (index == (count - 1)) {
 
                             if (tail->previous != nullptr) {
                                 tail = tail->previous;
-                                update_middle_reduce_right();
+                                UpdateMiddleReduceRight();
                                 free(tail->next);
                             }
                         }
@@ -300,7 +330,7 @@ extern "C++" {
 
                                 node->previous->next = node->next;
                                 node->next->previous = node->previous;
-                                update_middle_reduce_left();
+                                UpdateMiddleReduceLeft();
                                 free(node);
 
                             }
@@ -308,7 +338,7 @@ extern "C++" {
 
                                 node->previous->next = node->next;
                                 node->next->previous = node->previous;
-                                update_middle_reduce_right();
+                                UpdateMiddleReduceRight();
                                 free(node);
 
                             }
@@ -318,8 +348,8 @@ extern "C++" {
                     }
                 }
 
-                // copy
-                List* copy() {
+                // Copy
+                List& Copy() {
 
                     Node* node;
                     List* arrayCopy;
@@ -329,43 +359,49 @@ extern "C++" {
 
                     while (node != nullptr) {
 
-                        arrayCopy->push(node->data);
+                        arrayCopy->Push(node->data);
 
                         node = node->next;
                     }
 
-                    return arrayCopy;
+                    return *arrayCopy;
                 }
 
-                List* concat(List* A, List* B) {
+                // List& Concat(List* A, List* B) {
 
-                    Node* node;
-                    List* arrayCopy;
+                //     Node* node;
+                //     List* arrayCopy;
 
-                    node = &B->bottom();
-                    arrayCopy = A->copy();
+                //     node = &B->Bottom();
+                //     arrayCopy = &A->Copy();
 
-                    while (node != nullptr) {
+                //     while (node != nullptr) {
 
-                        arrayCopy->push(node->data);
+                //         arrayCopy->Push(node->data);
 
-                        node = node->next;
-                    }
+                //         node = node->next;
+                //     }
 
-                    return arrayCopy;
+                //     return *arrayCopy;
+                // }
+
+                template<typename... Args>
+                List& Concat(Args&&... arguments) {
+
+                    return ConcatConceptMultiply(arguments...);
                 }
 
-                Node& bottom() {
+                Node& Bottom() {
 
                     return *head;
                 }
 
-                Node& top() {
+                Node& Top() {
 
                     return *tail;
                 }
 
-                T shift() {
+                T Shift() {
 
                     T data;
                     Node* node;
@@ -375,7 +411,7 @@ extern "C++" {
                     head = node->next;
                     head->previous = nullptr;
 
-                    update_middle_reduce_left();
+                    UpdateMiddleReduceLeft();
 
                     free(node);
 
@@ -384,7 +420,7 @@ extern "C++" {
                     return data;
                 }
 
-                T pop() {
+                T Pop() {
 
                     T data;
                     Node* node;
@@ -394,7 +430,7 @@ extern "C++" {
                     tail = node->previous;
                     tail->next = nullptr;
 
-                    update_middle_reduce_right();
+                    UpdateMiddleReduceRight();
 
                     free(node);
 
@@ -403,7 +439,7 @@ extern "C++" {
                     return data;
                 }
 
-                ReturnType<ui64> indexOf(T data) {
+                ReturnType<ui64> GetIndexOf(T data) {
 
                     ui64 index;
                     Node* node;
@@ -415,7 +451,7 @@ extern "C++" {
 
                         if (node->data == data) {
 
-                            returnType.type = "ok";
+                            returnType.type = RETURN_TYPE_OK;
                             returnType.value = index;
                         }
 
@@ -423,28 +459,28 @@ extern "C++" {
                         index++;
                     }
 
-                    returnType.type = "err";
+                    returnType.type = RETURN_TYPE_FAIL;
 
                     return returnType;
                 }
 
-                void reverse() {
+                void Reverse() {
 
                     Node* node;
                     Node* safe;
-                    Node* copy;
+                    Node* Copy;
                     Node* prev;
                     Node* swap;
 
                     safe = head;
-                    copy = head;
+                    Copy = head;
                     node = nullptr;
                     prev = nullptr;
                     swap = nullptr;
 
                     while (true) {
 
-                        prev = copy;
+                        prev = Copy;
                         node = prev->next;
 
                         // LOG("check at: " << (int)prev->data)
@@ -452,7 +488,7 @@ extern "C++" {
                         if (node == nullptr) break;
 
                         safe = node->next;
-                        copy = safe;
+                        Copy = safe;
 
                         node->next = prev;
                         node->previous = safe;
@@ -474,9 +510,23 @@ extern "C++" {
                     tail->next = nullptr;
                 }
 
-                // slice
-                // splice
-                // put | put ( index, value ) | menyisipkan value
+                bool Includes(T data) {
+
+                    Node* node;
+                    node = head;
+
+                    while(node != nullptr) {
+
+                        if (node->data == data) return true;
+
+                        node = node->next;
+                    }
+
+                    return false;
+                }
+                
+                // slice (index)start, (count)length
+                // splice (index)start, (count)delete, (data)put
         };
 
     };

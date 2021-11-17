@@ -49,13 +49,13 @@ int main(int argc, const char** argv) {
 
     ll = new Ex::List<i8>();
 
-    ll->push(3);
-    ll->push(6);
-    ll->push(9);
-    ll->push(1);
-    ll->push(5);
-    // ll->push(8);
-    // ll->push(7);
+    ll->Push(3);
+    ll->Push(6);
+    ll->Push(9);
+    ll->Push(1);
+    ll->Push(5);
+    // ll->Push(8);
+    // ll->Push(7);
 
     std::cout << (size_t)(ll) << std::endl;
 
@@ -86,52 +86,55 @@ int main(int argc, const char** argv) {
 
     LOG(ls)
 
-    ls->push(12);
+    ls->Push(12);
 
-    ls->set(4, 64);
+    ls->SetItem(4, 64);
 
-    // ls->remove(0);
-    // ls->remove(4);
-    // ls->remove(1);
-    // ls->remove(2);
-    // ls->remove(4);
+    // ls->Remove(0);
+    // ls->Remove(4);
+    // ls->Remove(1);
+    // ls->Remove(2);
+    // ls->Remove(4);
 
 
     // -------------------
 
-    std::cout << ll->size() << std::endl;
+    std::cout << ll->Size() << std::endl;
 
-    for (size_t i = 0; i < ls->size(); i++) {
+    for (size_t i = 0; i < ls->Size(); i++) {
 
-        std::cout << (int)(ls->get(i).value) << std::endl;
+        std::cout << (int)(ls->GetItem(i).value) << std::endl;
     }
 
     Ex::List<i8> *lx;
 
-    lx = ls->copy();
+    lx = &ls->Copy();
 
-    for (size_t i = 0; i < lx->size(); i++) {
+    for (size_t i = 0; i < lx->Size(); i++) {
 
-        std::cout << (int)(lx->get(i).value) << std::endl;
+        std::cout << (int)(lx->GetItem(i).value) << std::endl;
     }
 
     Ex::List<i8> *le;
 
-    le = ls->concat(ls, lx);
+    le = &ls->Concat(*ls, *lx, *ls);
 
-    le->shift();
-    le->pop();
-    le->remove(4);
+    LOG((le->Includes(12) ? "ok found it" : "not found anymore"))
+    LOG((le->Includes(24) ? "ok found it" : "not found anymore"))
 
-    le->reverse();
+    le->Shift();
+    le->Pop();
+    le->Remove(4);
+
+    le->Reverse();
 
     std::cout << "===" << std::endl;
 
-    for (size_t i = 0; i < le->size(); i++) {
+    for (size_t i = 0; i < le->Size(); i++) {
 
-        Ex::ReturnType<i8> rt = le->get(i);
+        Ex::ReturnType<i8> rt = le->GetItem(i);
 
-        if (rt.type == "ok") std::cout << (int)(rt.value) << std::endl;
+        if (rt.type == Ex::RETURN_TYPE_OK) std::cout << (int)(rt.value) << std::endl;
     }
 
     std::cout << "===" << std::endl;
