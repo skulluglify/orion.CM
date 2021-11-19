@@ -116,11 +116,12 @@ int main(int argc, const char** argv) {
     }
 
     Ex::List<i8> *le;
+    Ex::List<i8> *lf;
 
     le = &ls->Concat(*ls, *lx, *ls);
 
-    LOG((le->Includes(12) ? "ok found it" : "not found anymore"))
-    LOG((le->Includes(24) ? "ok found it" : "not found anymore"))
+    LOG((le->Contains(12) ? "ok found it" : "not found anymore"))
+    LOG((le->Contains(24) ? "ok found it" : "not found anymore"))
 
     le->Shift();
     le->Pop();
@@ -128,13 +129,27 @@ int main(int argc, const char** argv) {
 
     le->Reverse();
 
+
+    lf = &le->Slice(2, 6);
+
     std::cout << "===" << std::endl;
 
     for (size_t i = 0; i < le->Size(); i++) {
 
         Ex::ReturnType<i8> rt = le->GetItem(i);
 
-        if (rt.type == Ex::RETURN_TYPE_OK) std::cout << (int)(rt.value) << std::endl;
+        if (rt.type == Ex::ReturnType<i8>::Status::OK) std::cout << (int)(rt.value) << std::endl;
+    }
+
+    std::cout << "===" << std::endl;
+
+    std::cout << "===" << std::endl;
+
+    for (size_t i = 0; i < lf->Size(); i++) {
+
+        Ex::ReturnType<i8> rt = lf->GetItem(i);
+
+        if (rt.type == Ex::ReturnType<i8>::Status::OK) std::cout << (int)(rt.value) << std::endl;
     }
 
     std::cout << "===" << std::endl;

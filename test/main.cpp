@@ -1,13 +1,8 @@
 #include<iostream>
+#include<math.h>
 
 using namespace std;
 #define LOG(x) cout << x << endl;
-
-long double pow(int n, int e) { // get more trouble
-
-    if (e == 1) return n;
-    return n * pow(n, e - 1);
-}
 
 int multiply(void) {
 
@@ -40,6 +35,7 @@ int main(const int argc, const char** argv) {
     LOG(multiply<int>(1,2,3,4))
 
     LOG(pow(2,3))
+    LOG(pow(16,0.5))
 
     return 0;
 }

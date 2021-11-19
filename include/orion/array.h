@@ -16,13 +16,15 @@ extern "C++" {
         template<typename T>
         struct ReturnType {
 
+            enum Status {
+                FAIL = 0x00,
+                OK = 0x01
+            };
+
             ui8 type;
             T value;
 
         };
-
-        const ui8 RETURN_TYPE_OK = 0x01;
-        const ui8 RETURN_TYPE_FAIL = 0x00;
 
         template<typename T>
         class List {
@@ -176,7 +178,7 @@ extern "C++" {
                     //     ReturnType<T> returnType;
                     //     returnType = arraySafe->GetItem(i);
 
-                    //     if (returnType.type == RETURN_TYPE_OK)
+                    //     if (returnType.type == returnType.OK)
                     //         arrayCopy->Push(returnType.value);
                     
                     // }
@@ -241,13 +243,13 @@ extern "C++" {
                         node = MiddleSearch(index); // 4 virtual abstract
 
                         if (node != nullptr) {
-                            returnType.type = RETURN_TYPE_OK;
+                            returnType.type = returnType.OK;
                             returnType.value = node->data;
                             return returnType;
                         };
                     }
 
-                    returnType.type = RETURN_TYPE_FAIL;
+                    returnType.type = returnType.FAIL;
                     
                     return returnType;
                 }
@@ -461,7 +463,7 @@ extern "C++" {
 
                         if (node->data == data) {
 
-                            returnType.type = RETURN_TYPE_OK;
+                            returnType.type = returnType.OK;
                             returnType.value = index;
                         }
 
@@ -469,7 +471,7 @@ extern "C++" {
                         index++;
                     }
 
-                    returnType.type = RETURN_TYPE_FAIL;
+                    returnType.type = returnType.FAIL;
 
                     return returnType;
                 }
@@ -520,7 +522,8 @@ extern "C++" {
                     tail->next = nullptr;
                 }
 
-                bool Includes(T data) {
+                // multiply arguments, fold, variadic
+                bool Contains(T data) {
 
                     Node* node;
                     node = head;
@@ -535,11 +538,55 @@ extern "C++" {
                     return false;
                 }
 
-                // slice (index)start, (count)length
+                // slice (index)start, (count)end+1 start - (length-start)
+                List& Slice(ui64 start, ui64 end) {
+
+                    List* copy;
+                    Node* node;
+                    
+                    copy = new List();
+                    node = head;
+
+                    if (start < end) {
+
+                        if (count < end) end = count;
+
+                        ui64 length = end - start;
+
+                        // while (start != 0) {
+
+                        //     node = node->next;
+                            
+                        //     start--;
+                        // }
+
+                        node = MiddleSearch(start);
+
+                        while (length != 0) {
+
+                            copy->Push(node->data);
+                            
+                            node = node->next;
+                            
+                            length--;
+                        }
+                    }
+
+                    return *copy;
+
+                }
                 // splice (index)start, (count)delete, (data)put
+                // map
+                // filter
+                // forEach
+                // forEachRev
         };
 
     };
+
+    // Tuple
+    // Dict
+    // NodeList
 
 }
 
