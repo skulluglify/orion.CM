@@ -164,6 +164,19 @@ int main(int argc, const char** argv) {
 
     std::cout << "===" << std::endl;
 
+    lf->Reverse();
+
+    std::cout << "===" << std::endl;
+
+    for (size_t i = 0; i < lf->Size(); i++) {
+
+        Ex::ReturnType<i8> rt = lf->GetItem(i);
+
+        if (rt.type == Ex::ReturnType<i8>::Status::OK) std::cout << (int)(rt.value) << std::endl;
+    }
+
+    std::cout << "===" << std::endl;
+
     Ye::printStr2Int<6>(t);
 
     // std::cout << Ye::a2i('0') << std::endl;

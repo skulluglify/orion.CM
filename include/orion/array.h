@@ -59,23 +59,26 @@ extern "C++" {
                 
                 ui64 count;
 
-                ui64 GetMiddlePos(ui64 Size) {
-                    return (Size & 1) == 1 ? (Size + 1) / 2 : Size / 2;
+                ui64 GetMiddlePos(ui64 m_size) {
+                    return (m_size & 1) == 1 ? (m_size + 1) / 2 : m_size / 2;
                 }
 
-                Node* MiddleSearchChild(ui64 Size, ui64 index, NodeIterator nodeIterator) {
+                Node* MiddleSearchChild(ui64 m_size, ui64 index, NodeIterator nodeIterator) {
+
                     Node* node;
-                    Node* begin;
-                    Node* end;
+                    // Node* begin;
+                    // Node* end;
                     ui64 middle, i;
-                    node = new Node();
-                    begin = new Node();
-                    end = new Node();
-                    begin = nodeIterator.begin;
-                    end = nodeIterator.end;
-                    middle = GetMiddlePos(Size) - 1;
+                    // node = new Node();
+                    // begin = new Node();
+                    // end = new Node();
+                    // begin = nodeIterator.begin;
+                    // end = nodeIterator.end;
+                    middle = GetMiddlePos(m_size) - 1;
+                    
                     if (index <= middle) {  // ODD | EVEN AS SAME MEAN
-                        node = begin;
+                        // node = begin;
+                        node = nodeIterator.begin;
                         i = 0;
                         while (i <= middle) {
                             if (index == i) break;
@@ -83,8 +86,9 @@ extern "C++" {
                             i++;
                         }
                     } else if (middle < index) { // ODD | EVEN AS SAME
-                        node = end;
-                        i = Size - 1;
+                        // node = end;
+                        node = nodeIterator.end;
+                        i = m_size - 1;
                         while (middle < i) {
                             if (index == i) break;
                             node = node->previous;
@@ -95,29 +99,33 @@ extern "C++" {
                 }
 
                 Node* MiddleSearch(ui64 index) {
+
                     Node* node;
                     NodeIterator nodeIterator;
-                    ui64 middle, Size;
+                    ui64 middle;
+                    ui64 m_size;
+
                     node = new Node();
                     middle = GetMiddlePos(count) - 1;
-                    Size = 0;
+                    m_size = 0;
                     nodeIterator.begin = head; // start | middle as same
+                    
                     if (index <= middle) {
                         if ((count & 1) == 1) { // ODD
-                            Size = middle;
+                            m_size = middle;
                             if (index < middle) {
                                 nodeIterator.end = midz->previous;
                             }
                             if (index == middle) return midz;
                         } else { // EVEN
-                            Size = middle + 1;
+                            m_size = middle + 1;
                             nodeIterator.end = midz;
                         }
-                        node = MiddleSearchChild(Size, index, nodeIterator);
+                        node = MiddleSearchChild(m_size, index, nodeIterator);
                     } else if (middle < index) { // ODD | EVEN AS SAME
                         nodeIterator.begin = midz->next;
                         nodeIterator.end = tail;
-                        node = MiddleSearchChild(Size, index - middle - 1, nodeIterator);
+                        node = MiddleSearchChild(m_size, index - middle - 1, nodeIterator);
                     }
                     return node;
                 }
@@ -540,19 +548,19 @@ extern "C++" {
 
                     Node* node;
                     Node* safe;
-                    Node* Copy;
+                    Node* copy;
                     Node* prev;
                     Node* swap;
 
-                    safe = head;
-                    Copy = head;
+                    copy = head;
+                    safe = nullptr;
                     node = nullptr;
                     prev = nullptr;
                     swap = nullptr;
 
                     while (true) {
 
-                        prev = Copy;
+                        prev = copy;
                         node = prev->next;
 
                         // LOG("check at: " << (int)prev->data)
@@ -560,7 +568,7 @@ extern "C++" {
                         if (node == nullptr) break;
 
                         safe = node->next;
-                        Copy = safe;
+                        copy = safe;
 
                         node->next = prev;
                         node->previous = safe;
@@ -682,7 +690,7 @@ extern "C++" {
 
                             RemovePtr(node, start);
 
-                            // LOG("DEBUG: " << start << " at: " << (int)(node->data) << " size: " << count << " middle at: " << (int)midz->data)
+                            // LOG("DEBUG: " << start << " at: " << (int)(node->data) << " m_size: " << count << " middle at: " << (int)midz->data)
                             
                             // count++;
                             
