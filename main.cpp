@@ -129,6 +129,16 @@ int main(int argc, const char** argv) {
 
     le->Reverse();
 
+    std::cout << "===" << std::endl;
+
+    for (size_t i = 0; i < le->Size(); i++) {
+
+        Ex::ReturnType<i8> rt = le->GetItem(i);
+
+        if (rt.type == Ex::ReturnType<i8>::Status::OK) std::cout << (int)(rt.value) << std::endl;
+    }
+
+    std::cout << "===" << std::endl;
 
     lf = &le->Slice(2, 6);
 

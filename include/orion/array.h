@@ -63,11 +63,11 @@ extern "C++" {
                     return (Size & 1) == 1 ? (Size + 1) / 2 : Size / 2;
                 }
 
-                Node* MiddleSearchChild(uint32_t Size, ui64 index, NodeIterator nodeIterator) {
+                Node* MiddleSearchChild(ui64 Size, ui64 index, NodeIterator nodeIterator) {
                     Node* node;
                     Node* begin;
                     Node* end;
-                    uint32_t middle, i;
+                    ui64 middle, i;
                     node = new Node();
                     begin = new Node();
                     end = new Node();
@@ -97,7 +97,7 @@ extern "C++" {
                 Node* MiddleSearch(ui64 index) {
                     Node* node;
                     NodeIterator nodeIterator;
-                    uint32_t middle, Size;
+                    ui64 middle, Size;
                     node = new Node();
                     middle = GetMiddlePos(count) - 1;
                     Size = 0;
@@ -278,7 +278,10 @@ extern "C++" {
 
                 // TODOs
                 void Remove(ui64 index) {
+                    
                     Node* node;
+                    ui64 last;
+                    last = count -1;
                     // node = head;
                     if (index < count) {
 
@@ -309,7 +312,7 @@ extern "C++" {
 
                         // middle
                         // ======================================================
-                        else if (index == (ui64)(middle)) {    
+                        else if (index == middle) {    
 
                             Node* displace;
                             displace = midz;
@@ -324,7 +327,7 @@ extern "C++" {
 
                         // tail as same Pop
                         // ======================================================
-                        else if (index == (count - 1)) {
+                        else if (index == last) {
 
                             if (tail->previous != nullptr) {
                                 tail = tail->previous;
@@ -542,16 +545,27 @@ extern "C++" {
                 List& Slice(ui64 start, ui64 end) {
 
                     List* copy;
+                    Node* safe;
                     Node* node;
+
+                    ui64 middle;
+                    ui64 range;
+                    ui64 last;
                     
                     copy = new List();
-                    node = head;
+                    safe = nullptr;
+                    node = nullptr;
+
+                    middle = GetMiddlePos(count) - 1;
+                    range = 0;
+                    last = count > 0 ? count - 1 : 0;
+
+                    // if (start < 0) start = 0;
+                    if (count < end) end = count;
 
                     if (start < end) {
 
-                        if (count < end) end = count;
-
-                        ui64 length = end - start;
+                        range = end - start + 1;
 
                         // while (start != 0) {
 
@@ -560,15 +574,57 @@ extern "C++" {
                         //     start--;
                         // }
 
-                        node = MiddleSearch(start);
+                        safe = MiddleSearch(start);
 
-                        while (length != 0) {
+                        while (range != 0) {
+
+                            node = safe;
 
                             copy->Push(node->data);
                             
-                            node = node->next;
+                            safe = node->next;
+
+                            // remove node in List
+                            if (start == 0) {
+                                head = node->next;
+                                UpdateMiddleReduceLeft();
+                                free(node);
+                            }
+
+                            else if (0 < start && start < middle) {
+                                node->next->previous = node->previous;
+                                node->previous->next = node->next;
+                                UpdateMiddleReduceLeft();
+                                free(node);
+                            }
+
+                            else if (start == middle) {
+                                UpdateMiddleReduce();
+                                node->next->previous = node->previous;
+                                node->previous->next = node->next;
+                                free(node);
+                            }
+
+                            else if (middle < start && start < last) {
+                                node->next->previous = node->previous;
+                                node->previous->next = node->next;
+                                UpdateMiddleReduceRight();
+                                free(node);
+                            }
+
+                            else if (start == last) {
+                                tail = node->previous;
+                                UpdateMiddleReduceRight();
+                                free(node);
+                            }
+
+                            // remove node in List
                             
-                            length--;
+                            range--;
+
+                            count--;
+
+                            start++;
                         }
                     }
 
@@ -577,10 +633,33 @@ extern "C++" {
                 }
                 // splice (index)start, (count)delete, (data)put
                 // map
+                // flat
                 // filter
                 // forEach
                 // forEachRev
+            
+            // public
         };
+
+        template<typename T>
+        class Dict {
+
+            private:
+                struct Item {
+
+                    std::string key;
+                    T value;
+                };
+
+            public:
+
+                void SetItem(std::string key, T value) {}
+                void GetItem(std::string key) {}
+
+            // public
+        };
+
+        // NodeList
 
     };
 
