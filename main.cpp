@@ -140,7 +140,7 @@ int main(int argc, const char** argv) {
 
     std::cout << "===" << std::endl;
 
-    lf = &le->Slice(2, 6);
+    lf = &le->Slice(2, 4);
 
     std::cout << "===" << std::endl;
 
@@ -163,6 +163,20 @@ int main(int argc, const char** argv) {
     }
 
     std::cout << "===" << std::endl;
+
+
+    lf->Reverse();
+
+    std::cout << "===" << std::endl;
+
+    for (size_t i = 0; i < lf->Size(); i++) {
+
+        Ex::ReturnType<i8> rt = lf->GetItem(i);
+
+        if (rt.type == Ex::ReturnType<i8>::Status::OK) std::cout << (int)(rt.value) << std::endl;
+    }
+
+    lf->Splice(1, 1, (i8)23, (i8)24, (i8)25);
 
     lf->Reverse();
 

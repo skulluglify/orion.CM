@@ -140,17 +140,7 @@ extern "C++" {
                     if (vmiddle == middle) {
                         midz = midz->next;
                     }
-                    else if (vmiddle == (middle - 1)) {
-                        midz = midz->previous;
-                    }
-                }
-
-                void UpdateMiddleReduceRight() { // if right loss
-
-                    ui64 vmiddle = GetMiddlePos(count - 1) - 1; // virtual
-                    ui64 middle = GetMiddlePos(count) - 1;
-
-                    if (vmiddle == (middle - 1)) {
+                    else if (vmiddle < middle) {
                         midz = midz->previous;
                     }
                 }
@@ -165,10 +155,50 @@ extern "C++" {
                     }
                 }
 
+                void UpdateMiddleReduceRight() { // if right loss
+
+                    ui64 vmiddle = GetMiddlePos(count - 1) - 1; // virtual
+                    ui64 middle = GetMiddlePos(count) - 1;
+
+                    if (vmiddle < middle) {
+                        midz = midz->previous;
+                    }
+                }
+
+                // ********************** FOR REMOVE FUN ********************** //
+                // ********************** FOR  PUT   FUN ********************** //
+
+                void UpdateMiddleAccrue() {
+
+                    UpdateMiddleAccrueLeft();
+                }
+
+                void UpdateMiddleAccrueLeft() {
+
+                    ui64 vmiddle = GetMiddlePos(count + 1) - 1; // virtual
+                    ui64 middle = GetMiddlePos(count) - 1;
+
+                    if (vmiddle == middle) {
+                        midz = midz->previous;
+                    }
+                }
+
+                void UpdateMiddleAccrueRight() {
+
+                    ui64 vmiddle = GetMiddlePos(count + 1) - 1; // virtual
+                    ui64 middle = GetMiddlePos(count) - 1;
+
+                    if (middle < vmiddle) {
+                        midz = midz->next;
+                    }
+                }
+
+                // ********************** FOR  PUT   FUN ********************** //
+
                 void OmitPtr(Node* node) {
 
-                    node->next->previous = node->previous;
-                    node->previous->next = node->next;
+                    if (node != tail) node->next->previous = node->previous;
+                    if (node != head) node->previous->next = node->next;
                     // free(node);
 
                 };
@@ -177,6 +207,7 @@ extern "C++" {
 
                     ui64 middle;
                     ui64 last;
+
 
                     middle = GetMiddlePos(count) -1;
                     last = count > 0 ? count -1 : 0;
@@ -210,7 +241,6 @@ extern "C++" {
 
                         free(node);
                     }
-
 
                     count--;
                 }
@@ -558,31 +588,36 @@ extern "C++" {
                     prev = nullptr;
                     swap = nullptr;
 
-                    while (true) {
+                    if (count > 3) {
+                        while (true) {
 
-                        prev = copy;
-                        node = prev->next;
+                            prev = copy;
+                            if (prev == nullptr) break;
+                            
+                            node = prev->next;
+                            if (node == nullptr) break;
+                            
+                            // LOG("check at: " << (int)prev->data)
 
-                        // LOG("check at: " << (int)prev->data)
+                            safe = node->next;
+                            copy = safe;
 
-                        if (node == nullptr) break;
-
-                        safe = node->next;
-                        copy = safe;
-
-                        node->next = prev;
-                        node->previous = safe;
-                        
-                        swap = prev->next;
-                        prev->next = prev->previous;
-                        prev->previous = swap;
+                            node->next = prev;
+                            node->previous = safe;
+                            
+                            swap = prev->next;
+                            prev->next = prev->previous;
+                            prev->previous = swap;
+                        }
                     }
+
+                    if (count > 3) {
+                        if ((count & 1) == 0) midz = midz->previous;
+                    } else if (count == 2) midz = tail;
 
                     swap = head;
                     head = tail;
                     tail = swap;
-
-                    if ((count & 1) == 0) midz = midz->previous;
 
                     head->next = head->previous;
                     head->previous = nullptr;
@@ -614,7 +649,7 @@ extern "C++" {
                     Node* node;
 
                     // ui64 middle;
-                    ui64 range;
+                    // ui64 range;
                     // ui64 length;
                     // ui64 last;
                     
@@ -623,7 +658,7 @@ extern "C++" {
                     node = nullptr;
 
                     // middle = GetMiddlePos(count) - 1;
-                    range = 0;
+                    // range = 0;
                     // length = 0;
                     // last = count > 0 ? count - 1 : 0;
 
@@ -632,7 +667,8 @@ extern "C++" {
 
                     if (start < end) {
 
-                        range = end - start + 1;
+                        // length = end - start + 1;
+                        end = end - start;
                         // length = range;
 
                         // while (start != 0) {
@@ -644,7 +680,7 @@ extern "C++" {
 
                         safe = MiddleSearch(start);
 
-                        while (range != 0) {
+                        while (end != 0) {
 
                             node = safe;
 
@@ -694,7 +730,7 @@ extern "C++" {
                             
                             // count++;
                             
-                            range--;
+                            end--;
 
                             // count--;
 
@@ -716,7 +752,93 @@ extern "C++" {
                     return *copy;
 
                 }
+
+                void Put(ui64 index, T data) {
+
+                    Node* node;
+                    Node* safe;
+
+                    ui64 middle;
+                    // ui64 last;
+
+                    safe = MiddleSearch(index);
+
+                    node = new Node();
+
+                    middle = GetMiddlePos(count) -1;
+
+                    // last = count -1;
+
+
+                    node->data = data;
+
+                    if (index < middle) {
+
+                        if (index == 0) head = node;
+
+                        node->next = safe;
+                        node->previous = safe->previous;
+                        if (safe->previous != nullptr && index > 0) safe->previous->next = node;
+                        else head = node;
+                        safe->previous = node;
+
+                        UpdateMiddleAccrueLeft();
+                    }
+                    else if (index == middle) {
+
+                        node->next = safe;
+                        node->previous = safe->previous;
+                        if (safe->previous != nullptr && index > 0) safe->previous->next = node;
+                        else head = node;
+                        safe->previous = node;
+                        UpdateMiddleAccrue();
+
+                    }
+                    else if (middle < index) {
+
+                        // if (index == last) {}
+                        node->next = safe;
+                        node->previous = safe->previous;
+                        if (safe->previous != nullptr && index > 0) safe->previous->next = node;
+                        else head = node;
+                        safe->previous = node;
+                        UpdateMiddleAccrueRight(); 
+                    }
+
+                    count++;
+
+                }
+
+                void Puts(ui64) {
+
+                    // return;
+                }
+
+                template<typename... Args>
+                void Puts(ui64 index, T data, Args&&... arguments) {
+
+                    if (count == index) Push(data);
+                    else Put(index, data);
+
+                    LOG("index at: " << index)
+
+                    Puts(index + 1, arguments...);
+                }
+
                 // splice (index)start, (count)delete, (data)put
+                template<typename... Args>
+                List& Splice(ui64 start, ui64 deleteCount, Args&&... arguments) {
+
+                    List* copy;
+                    // copy = new List();
+                    copy = &Slice(start, start + deleteCount);
+
+                    LOG("deleteCount: " << deleteCount)
+
+                    Puts(start, arguments...);
+                    return *copy;
+                }
+                
                 // map
                 // flat
                 // filter
