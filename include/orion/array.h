@@ -157,6 +157,56 @@ extern "C++" {
                     }
                 }
 
+                void OmitPtr(Node* node) {
+
+                    node->next->previous = node->previous;
+                    node->previous->next = node->next;
+                    // free(node);
+
+                };
+
+                void RemovePtr(Node* node, ui64 index) {
+
+                    ui64 middle;
+                    ui64 last;
+
+                    middle = GetMiddlePos(count) -1;
+                    last = count > 0 ? count -1 : 0;
+
+                    if (node == nullptr) return;
+
+                    if (index < count) {
+
+                        if (index < middle) {
+
+                            if (index != 0) OmitPtr(node);
+                            else head = node->next;
+
+                            UpdateMiddleReduceLeft();
+                        }
+
+                        else if (index == middle) {
+
+                            OmitPtr(node);
+
+                            UpdateMiddleReduce();
+                        }
+
+                        else if (middle < index) {
+
+                            if (index != last) OmitPtr(node);
+                            else tail = node->previous;
+
+                            UpdateMiddleReduceRight();
+                        }
+
+                        free(node);
+                    }
+
+
+                    count--;
+                }
+
                 // ********************** FOR REMOVE FUN ********************** //
 
                 List& ConcatConceptMultiply(void) {
@@ -280,9 +330,13 @@ extern "C++" {
                 void Remove(ui64 index) {
                     
                     Node* node;
-                    ui64 last;
-                    last = count -1;
+                    // ui64 last;
+
+                    // node = nullptr;
+                    // last = count -1;
+
                     // node = head;
+                    
                     if (index < count) {
 
                         // while (index > 0) {
@@ -293,73 +347,76 @@ extern "C++" {
                         node = MiddleSearch(index); // 4 virtual abstract
 
 
-                        ui64 middle = GetMiddlePos(count) - 1;
+                        // ui64 middle = GetMiddlePos(count) - 1;
                         
-                        // LOG("middle " << middle)
+                        // // LOG("middle " << middle)
 
-                        // head as same Shift
-                        // ======================================================
-                        if (index == 0) {
+                        // // head as same Shift
+                        // // ======================================================
+                        // if (index == 0) {
 
-                            if (head->next != nullptr) {
-                                head = head->next;
-                                UpdateMiddleReduceLeft();
-                                free(head->previous);
-                            }
+                        //     if (head->next != nullptr) {
+                        //         head = head->next;
+                        //         UpdateMiddleReduceLeft();
+                        //         free(head->previous);
+                        //     }
 
-                        }
-                        // ======================================================
+                        // }
+                        // // ======================================================
 
-                        // middle
-                        // ======================================================
-                        else if (index == middle) {    
+                        // // middle
+                        // // ======================================================
+                        // else if (index == middle) {    
 
-                            Node* displace;
-                            displace = midz;
-                            if (displace->previous != nullptr && displace->next != nullptr) {
-                                UpdateMiddleReduce();
-                                displace->next->previous = displace->previous;
-                                displace->previous->next = displace->next;
-                                free(displace);
-                            }
-                        }
-                        // ======================================================
+                        //     Node* displace;
+                        //     displace = midz;
+                        //     if (displace->previous != nullptr && displace->next != nullptr) {
+                        //         UpdateMiddleReduce();
+                        //         displace->next->previous = displace->previous;
+                        //         displace->previous->next = displace->next;
+                        //         free(displace);
+                        //     }
+                        // }
+                        // // ======================================================
 
-                        // tail as same Pop
-                        // ======================================================
-                        else if (index == last) {
+                        // // tail as same Pop
+                        // // ======================================================
+                        // else if (index == last) {
 
-                            if (tail->previous != nullptr) {
-                                tail = tail->previous;
-                                UpdateMiddleReduceRight();
-                                free(tail->next);
-                            }
-                        }
-                        // ======================================================
+                        //     if (tail->previous != nullptr) {
+                        //         tail = tail->previous;
+                        //         UpdateMiddleReduceRight();
+                        //         free(tail->next);
+                        //     }
+                        // }
+                        // // ======================================================
 
-                        else {
+                        // else {
 
-                            // random node
-                            // update midz if left or right
-                            if (index < middle) {
+                        //     // random node
+                        //     // update midz if left or right
+                        //     if (index < middle) {
 
-                                node->previous->next = node->next;
-                                node->next->previous = node->previous;
-                                UpdateMiddleReduceLeft();
-                                free(node);
+                        //         node->previous->next = node->next;
+                        //         node->next->previous = node->previous;
+                        //         UpdateMiddleReduceLeft();
+                        //         free(node);
 
-                            }
-                            else if (middle < index) {
+                        //     }
+                        //     else if (middle < index) {
 
-                                node->previous->next = node->next;
-                                node->next->previous = node->previous;
-                                UpdateMiddleReduceRight();
-                                free(node);
+                        //         node->previous->next = node->next;
+                        //         node->next->previous = node->previous;
+                        //         UpdateMiddleReduceRight();
+                        //         free(node);
 
-                            }
-                        }
+                        //     }
+                        // }
 
-                        count--;
+
+                        RemovePtr(node, index);
+
+                        // count--;
                     }
                 }
 
@@ -548,17 +605,19 @@ extern "C++" {
                     Node* safe;
                     Node* node;
 
-                    ui64 middle;
+                    // ui64 middle;
                     ui64 range;
-                    ui64 last;
+                    // ui64 length;
+                    // ui64 last;
                     
                     copy = new List();
                     safe = nullptr;
                     node = nullptr;
 
-                    middle = GetMiddlePos(count) - 1;
+                    // middle = GetMiddlePos(count) - 1;
                     range = 0;
-                    last = count > 0 ? count - 1 : 0;
+                    // length = 0;
+                    // last = count > 0 ? count - 1 : 0;
 
                     // if (start < 0) start = 0;
                     if (count < end) end = count;
@@ -566,6 +625,7 @@ extern "C++" {
                     if (start < end) {
 
                         range = end - start + 1;
+                        // length = range;
 
                         // while (start != 0) {
 
@@ -585,47 +645,64 @@ extern "C++" {
                             safe = node->next;
 
                             // remove node in List
-                            if (start == 0) {
-                                head = node->next;
-                                UpdateMiddleReduceLeft();
-                                free(node);
-                            }
+                            // if (start == 0) {
+                            //     head = node->next;
+                            //     UpdateMiddleReduceLeft();
+                            //     free(node);
+                            // }
 
-                            else if (0 < start && start < middle) {
-                                node->next->previous = node->previous;
-                                node->previous->next = node->next;
-                                UpdateMiddleReduceLeft();
-                                free(node);
-                            }
+                            // else if (0 < start && start < middle) {
+                            //     node->next->previous = node->previous;
+                            //     node->previous->next = node->next;
+                            //     UpdateMiddleReduceLeft();
+                            //     free(node);
+                            // }
 
-                            else if (start == middle) {
-                                UpdateMiddleReduce();
-                                node->next->previous = node->previous;
-                                node->previous->next = node->next;
-                                free(node);
-                            }
+                            // else if (start == middle) {
+                            //     UpdateMiddleReduce();
+                            //     node->next->previous = node->previous;
+                            //     node->previous->next = node->next;
+                            //     free(node);
+                            // }
 
-                            else if (middle < start && start < last) {
-                                node->next->previous = node->previous;
-                                node->previous->next = node->next;
-                                UpdateMiddleReduceRight();
-                                free(node);
-                            }
+                            // else if (middle < start && start < last) {
+                            //     node->next->previous = node->previous;
+                            //     node->previous->next = node->next;
+                            //     UpdateMiddleReduceRight();
+                            //     free(node);
+                            // }
 
-                            else if (start == last) {
-                                tail = node->previous;
-                                UpdateMiddleReduceRight();
-                                free(node);
-                            }
+                            // else if (start == last) {
+                            //     tail = node->previous;
+                            //     UpdateMiddleReduceRight();
+                            //     free(node);
+                            // }
 
                             // remove node in List
+
+                            RemovePtr(node, start);
+
+                            // LOG("DEBUG: " << start << " at: " << (int)(node->data) << " size: " << count << " middle at: " << (int)midz->data)
+                            
+                            // count++;
                             
                             range--;
 
-                            count--;
+                            // count--;
 
-                            start++;
+                            // start++;
                         }
+
+                        // Node* test;
+                        // test = head;
+                        // while (test != nullptr) {
+
+                        //     LOG("data: " << (int)(test->data))
+
+                        //     test = test->next;
+                        // }
+
+                        // count = count - length;
                     }
 
                     return *copy;
@@ -637,6 +714,7 @@ extern "C++" {
                 // filter
                 // forEach
                 // forEachRev
+                // sort, bubble sort
             
             // public
         };
@@ -645,13 +723,23 @@ extern "C++" {
         class Dict {
 
             private:
+
                 struct Item {
 
                     std::string key;
                     T value;
                 };
 
+                List<Item>* data;
+
             public:
+
+                Dict() {
+
+                    data = new List<Item>();
+                }
+
+                ~Dict() {}
 
                 void SetItem(std::string key, T value) {}
                 void GetItem(std::string key) {}
@@ -664,7 +752,6 @@ extern "C++" {
     };
 
     // Tuple
-    // Dict
     // NodeList
 
 }

@@ -24,50 +24,50 @@ extern "C++" {
         template<typename T>
         class List {
 
-            private:
+            // private:
 
-                struct Node {
+            //     struct Node {
                     
-                    struct Node* previous;
-                    struct Node* next;
+            //         struct Node* previous;
+            //         struct Node* next;
                     
-                    T data;
+            //         T data;
 
-                    Node(void) {}
-                    ~Node(void) {}
-                };
+            //         Node(void) {}
+            //         ~Node(void) {}
+            //     };
 
-                struct NodeIterator {
+            //     struct NodeIterator {
                     
-                    Node* begin;
-                    Node* end;
+            //         Node* begin;
+            //         Node* end;
 
-                    NodeIterator(void) {}
-                    ~NodeIterator(void) {}
-                };
+            //         NodeIterator(void) {}
+            //         ~NodeIterator(void) {}
+            //     };
 
-                Node* head;
-                Node* midz;
-                Node* tail;
+            //     Node* head;
+            //     Node* midz;
+            //     Node* tail;
                 
-                ui64 count;
+            //     ui64 count;
 
-                ui64 GetMiddlePos(ui64 Size);
+            //     ui64 GetMiddlePos(ui64 Size);
 
-                Node* MiddleSearchChild(uint32_t Size, ui64 index, NodeIterator nodeIterator);
+            //     Node* MiddleSearchChild(uint32_t Size, ui64 index, NodeIterator nodeIterator);
 
-                Node* MiddleSearch(ui64 index);
+            //     Node* MiddleSearch(ui64 index);
 
-                void UpdateMiddleReduce(void);
+            //     void UpdateMiddleReduce(void);
 
-                void UpdateMiddleReduceRight(void);
+            //     void UpdateMiddleReduceRight(void);
 
-                void UpdateMiddleReduceLeft(void);
+            //     void UpdateMiddleReduceLeft(void);
 
-                List& ConcatConceptMultiply(void);
+            //     List& ConcatConceptMultiply(void);
 
-                template<typename... Args>
-                List& ConcatConceptMultiply(List& current, Args&&... arguments);
+            //     template<typename... Args>
+            //     List& ConcatConceptMultiply(List& current, Args&&... arguments);
 
             public:
 
@@ -102,7 +102,9 @@ extern "C++" {
 
                 void Reverse(void);
 
-                bool Includes(T data);
+                bool Contains(T data);
+
+                List& Slice(ui64 start, ui64 end);
 
                 // slice (index)start, (count)length
                 // splice (index)start, (count)delete, (data)put
