@@ -88,7 +88,12 @@ int main(int argc, const char** argv) {
 
     ls->Push(12);
 
-    ls->SetItem(4, 64);
+    // ls->SetItem(4, 64);
+    // ls[4] = (i8)64;
+    // LOG((int)((*ls)[4]) << "operator")
+    // Ex::List<i8> lss = *ls; 
+
+    (*ls)[4] = 127;
 
     // ls->Remove(0);
     // ls->Remove(4);
@@ -222,6 +227,26 @@ int main(int argc, const char** argv) {
     // std::cout << Ye::b2i('9') << std::endl;
     // std::cout << Ye::b2i('+') << std::endl;
     // std::cout << Ye::b2i('/') << std::endl;
+
+    Ex::Dict<ui8> dict;
+
+    // dict = new Ex::Dict<ui8>();
+
+    // dict.SetItem("umur", 64);
+    // dict.SetItem("panjang", 128);
+    // dict.SetItem("lebar", 255);
+    LOG(66)
+
+    dict["umur"] = (ui8)64;
+    dict["panjang"] = (ui8)128;
+    dict["lebar"] = (ui8)255;
+    dict["panjang"] = (ui8)12;
+
+    LOG(44)
+
+    std::cout << "panjang: " << (i32)dict["panjang"].valueOf() << std::endl;
+    std::cout << "lebar: " << (i32)dict["lebar"].valueOf() << std::endl;
+    std::cout << "umur: " << (i32)dict["umur"].valueOf() << std::endl;
 
     return 0;
 }

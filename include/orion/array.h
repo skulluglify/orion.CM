@@ -272,7 +272,7 @@ extern "C++" {
                     // }
 
                     Node* node;
-                    node = &arraySafe->Bottom();
+                    node = &arraySafe->First();
 
                     while (node != nullptr) {
 
@@ -320,6 +320,7 @@ extern "C++" {
                     
                     Node* node;
                     ReturnType<T> returnType;
+                    returnType.type = returnType.FAIL;
                     // node = head;
                     if (index < count) {
 
@@ -333,11 +334,10 @@ extern "C++" {
                         if (node != nullptr) {
                             returnType.type = returnType.OK;
                             returnType.value = node->data;
-                            return returnType;
+                            // return returnType;
                         };
                     }
 
-                    returnType.type = returnType.FAIL;
                     
                     return returnType;
                 }
@@ -482,7 +482,7 @@ extern "C++" {
                 //     Node* node;
                 //     List* arrayCopy;
 
-                //     node = &B->Bottom();
+                //     node = &B->First();
                 //     arrayCopy = &A->Copy();
 
                 //     while (node != nullptr) {
@@ -501,7 +501,7 @@ extern "C++" {
                     return ConcatConceptMultiply(arguments...);
                 }
 
-                Node& Bottom() {
+                Node& First() {
 
                     return *head;
                 }
@@ -820,7 +820,7 @@ extern "C++" {
                     if (count == index) Push(data);
                     else Put(index, data);
 
-                    LOG("index at: " << index)
+                    // LOG("index at: " << index)
 
                     Puts(index + 1, arguments...);
                 }
@@ -833,7 +833,7 @@ extern "C++" {
                     // copy = new List();
                     copy = &Slice(start, start + deleteCount);
 
-                    LOG("deleteCount: " << deleteCount)
+                    // LOG("deleteCount: " << deleteCount)
 
                     Puts(start, arguments...);
                     return *copy;
@@ -845,9 +845,24 @@ extern "C++" {
                 // forEach
                 // forEachRev
                 // sort, bubble sort
+
+                T& operator[](int index) {
+
+                    Node* node;
+                    node = MiddleSearch(index);
+                    return node->data;
+                }
             
             // public
         };
+
+        // Dict List
+        // List
+        // Get Set Remove
+
+        // ComplexList
+        // List
+
 
         template<typename T>
         class Dict {
@@ -862,6 +877,43 @@ extern "C++" {
 
                 List<Item>* data;
 
+                struct ItemSet {
+
+                    private:
+                    
+                        Item* m_item;
+                        Dict<T>* m_dict;
+
+                    public:
+
+                        ItemSet(Dict<T>* dict, Item& item) {
+
+                            m_item = &item;
+                            m_dict = dict;
+
+                        }
+
+                        ~ItemSet() {}
+
+                        T& valueOf() {
+
+                            return m_item->value;
+                        }
+
+                        void operator= (T value) {
+
+
+                            // LOG("test value: " << (int)value)
+
+                            m_item->value = value;
+
+                            // auto detect if not pushing
+                            m_dict->SetItem(m_item->key, m_item->value);
+                        }
+
+                    // public
+                };
+
             public:
 
                 Dict() {
@@ -871,8 +923,115 @@ extern "C++" {
 
                 ~Dict() {}
 
-                void SetItem(std::string key, T value) {}
-                void GetItem(std::string key) {}
+                bool Contains(std::string key) {
+
+                    auto *node = &data->First();
+                    while (node != nullptr) {
+
+                        if (node->data.key == key) return true;
+
+                        node = node->next;
+                    }
+
+                    return false;
+                }
+
+                void SetItem(std::string key, T value) {
+
+                    auto *node = &data->First();
+                    while (node != nullptr) {
+
+                        if (node->data.key == key) {
+
+                            node->data.value = value;
+
+                            return;
+                        }
+
+                        node = node->next;
+                    }
+
+                    Item* item;
+                    item = new Item();
+                    item->key = key;
+                    item->value = value;
+                    data->Push(*item);
+
+                    // if (!Contains(key)) {
+                    
+                    //     Item* item;
+                    //     item = new Item();
+                    //     item->key = key;
+                    //     item->value = value;
+                    //     data->Push(*item);
+                    
+                    // } else {
+
+                    // }
+                }
+
+                ReturnType<T> GetItem(std::string key) {
+
+                    // MiddleSearch Unused
+
+                    ReturnType<T> returnType;
+                    returnType.type = returnType.FAIL;
+
+                    auto *node = &data->First();
+                    while (node != nullptr) {
+
+                        if (node->data.key == key) {
+
+                            returnType.type = returnType.OK;
+                            returnType.value = node->data.value;
+                            break;
+                        }
+
+                        node = node->next;
+                    }
+
+                    return returnType;
+                }
+
+                template<typename... Args>
+                void Update(Dict& dict, Args&&... arguments) {
+
+                    // dict, update, merge, replace
+
+                    Update(arguments...);
+                }
+
+                ItemSet& operator[](std::string key) {
+
+
+                    auto *node = &data->First();
+                    while (node != nullptr) {
+
+                        if (node->data.key == key) {
+
+                            ItemSet *itemSet;
+                            itemSet = new ItemSet(this, node->data);
+
+                            return *itemSet;
+                            // break;
+                        }
+
+                        node = node->next;
+                    }
+
+                    // missing data
+                    
+                    Item item;
+                    item.key = key;
+
+                    ItemSet *itemSet;
+                    itemSet = new ItemSet(this, item);
+                    return *itemSet;
+                    
+                }
+
+                // Keys
+                // Items
 
             // public
         };
