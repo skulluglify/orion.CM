@@ -1,0 +1,5 @@
+#! /usr/bin/env bash
+
+for x in `find . -type f,l | grep -Ei '\.(c|cc|cpp|h)$'`; do
+    cat <<<`cat "$x" | sed 's/\t/    /g'` >"$x"
+done
