@@ -10,6 +10,11 @@
 extern "C++" {
 
     // pass
+    namespace Ex {
+
+        template<typename T>
+        class Dict {};
+    };
 
 }
 #endif
