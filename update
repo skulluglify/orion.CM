@@ -4,5 +4,5 @@ if [ -n "$(which git.np | grep -iv 'not found')" ]; then
     source git.np
     git add .
     git commit -am "noop"
-    git push -f
+    git push -f $1
 fi

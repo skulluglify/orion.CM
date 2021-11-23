@@ -368,19 +368,19 @@ extern "C++" {
 
                 List& copy(void) {
 
-                    List *copy;
+                    List *m_copy;
                     Node *node;
 
                     node = head;
-                    copy = new List();
+                    m_copy = new List();
 
                     while (node != nullptr) {
 
-                        copy->push(node->data);
+                        m_copy->push(node->data);
                         node = node->next;
                     }
 
-                    return *copy;
+                    return *m_copy;
                 }
 
                 template<typename... Args>
@@ -477,7 +477,7 @@ extern "C++" {
 
                         temp = node->next;
 
-                        swap = node->next;
+                        swap = temp;
                         node->next = node->previous;
                         node->previous = swap;
 

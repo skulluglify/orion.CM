@@ -1,6 +1,6 @@
 #pragma once
-#ifndef ORION_CORE_H
-#define ORION_CORE_H
+#ifndef _ORION_CORE_H
+#define _ORION_CORE_H
 
 #include"dtype.h"
 #include"debug.h"
