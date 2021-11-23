@@ -22,11 +22,11 @@ extern "C++" {
 
                 void push(T value);
 
-                auto& getitem(T value);
+                auto getitem(u64 index);
 
-                void setitem(T value);
+                void setitem(u64 index, T value);
 
-                u64 size(T value);
+                u64 size(void);
 
                 void remove(u64 index);
 
@@ -43,15 +43,13 @@ extern "C++" {
                 
                 T pop(void);
 
-                auto& indexOf(T value);
+                auto indexOf(T value);
 
                 List& reverse(void);
 
                 bool includes(T value);
 
                 List& slice(u64 start, u64 end);
-
-                void put(u64 index, T value);
 
                 void puts(u64);
 

@@ -32,8 +32,13 @@ extern "C++" {
             template<typename T>
             struct ReturnType {
 
-                const char* type;
-                T& data;
+                int type;
+                T data;
+
+                T valueOf(void) {
+
+                    return data;
+                }
 
             };
 

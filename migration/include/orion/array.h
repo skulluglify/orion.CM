@@ -24,7 +24,7 @@ extern "C++" {
                     struct Node *previous;
                     struct Node *next;
 
-                    T value;
+                    T data;
 
                     Node(void) {}
                     ~Node() {}
@@ -111,7 +111,7 @@ extern "C++" {
 
                             if (index < middle) nodeIterator.end = midz->previous;
 
-                            if (middle == index) return midz; 
+                            if (middle == index) return *midz; 
 
                         } else {
 
@@ -210,16 +210,6 @@ extern "C++" {
                     }
                 }
 
-                void omitNode(Node *node) {
-
-                    if (node != tail) node->next->previous = node->previous;
-                    else tail = node->previous;
-                    
-                    if (node != head) node->previous->next = node->next;
-                    else head = node->next;
-
-                }
-
                 List& _concat(void) {
 
                     return *(new List());
@@ -232,7 +222,7 @@ extern "C++" {
                     Node *node;
 
                     copy = &(array.copy());
-                    node = &(concat(arguments...))->first();
+                    node = &(_concat(arguments...).first());
 
                     while (node != nullptr) {
 
@@ -242,6 +232,36 @@ extern "C++" {
                     }
 
                     return *copy;
+                }
+
+                void put(u64 index, T value) {
+
+                    Node *node;
+                    Node *temp;
+
+                    u64 middle;
+
+                    node = &middleSearch(index);
+                    temp = new Node();
+
+                    middle = getMiddlePos();
+
+                    temp->data = value;
+
+                    temp->next = node;
+                    temp->previous = node->previous;
+
+                    if (node->previous != nullptr) node->previous->next = temp;
+                    else head = temp;
+
+                    node->previous = temp;
+
+                    if (index < middle) updateMiddleLeftAccrue();
+                    else if (middle == index) updateMiddleAccrue();
+                    else updateMiddleRightAccrue();
+
+                    dataCount++;
+
                 }
 
             // private
@@ -258,13 +278,67 @@ extern "C++" {
                 
                 ~List() {}
 
-                void push(T value);
+                void push(T value) {
 
-                auto& getitem(T value);
+                    Node *node;
 
-                void setitem(T value);
+                    node = new Node();
+                    node->data = value;
 
-                u64 size(T value);
+                    if (head == nullptr) {
+
+                        head = node;
+                        midz = head;
+                        tail = midz;
+                    
+                    } else {
+
+                        tail->next = node;
+                        node->previous = tail;
+                        tail = node;
+
+                        if (!(dataCount & 1)) {
+
+                            midz = midz->next;
+                        }
+                    }
+
+                    dataCount++;
+                }
+
+                auto getitem(u64 index) {
+
+                    Node *node;
+                    ReturnType<T> rty;
+
+                    rty.type = Type::FAIL;
+
+                    if (index < dataCount) {
+
+                        node = &middleSearch(index);
+
+                        rty.type = Type::SUCCESS;
+                        rty.data = node->data;
+                    }
+
+                    return rty;
+                }
+
+                void setitem(u64 index, T value) {
+
+                    Node *node;
+
+                    if (index < dataCount) {
+
+                        node = &middleSearch(index);
+                        node->data = value;
+                    }
+                }
+
+                u64 size(void) {
+
+                    return dataCount;
+                }
 
                 void remove(u64 index) {
 
@@ -276,30 +350,38 @@ extern "C++" {
 
                     node = &middleSearch(index);
                     middle = getMiddlePos();
-
-                    if (node == nullptr) return;
                     
-                    omitNode(node);
+                    if (node != tail) node->next->previous = node->previous;
+                    else tail = node->previous;
+                    
+                    if (node != head) node->previous->next = node->next;
+                    else head = node->next;
 
-                    if (index < middle) {
-
-                        updateMiddleLeftReduce();
-
-                    } else if (middle == index) {
-
-                        updateMiddleReduce();
-
-                    } else {
-
-                        updateMiddleRightReduce();
-                    }
+                    if (index < middle) updateMiddleLeftReduce();
+                    else if (middle == index) updateMiddleReduce();
+                    else updateMiddleRightReduce();
 
                     free(node);
 
                     dataCount--;
                 }
 
-                List& copy(void);
+                List& copy(void) {
+
+                    List *copy;
+                    Node *node;
+
+                    node = head;
+                    copy = new List();
+
+                    while (node != nullptr) {
+
+                        copy->push(node->data);
+                        node = node->next;
+                    }
+
+                    return *copy;
+                }
 
                 template<typename... Args>
                 List& concat(Args&&... arguments) {
@@ -307,57 +389,254 @@ extern "C++" {
                     return _concat(*this, arguments...);
                 }
 
-                auto& first(void);
+                auto& first(void) {
 
-                auto& top(void);
+                    return *head;
+                }
 
-                T shift(void);
+                auto& top(void) {
+
+                    return *tail;
+                }
+
+                T shift(void) {
+
+                    T value;
+                    Node *node;
+
+                    node = head;
+                    value = node->data;
+                    head = node->next;
+                    head->previous = nullptr;
+
+                    updateMiddleLeftReduce();
+
+                    free(node);
+                    dataCount--;
+
+                    return value;
+                }
                 
-                T pop(void);
+                T pop(void) {
 
-                auto& indexOf(T value);
+                    T value;
+                    Node *node;
 
-                List& reverse(void);
+                    node = tail;
+                    value = node->data;
+                    tail = node->previous;
+                    tail->next = nullptr;
 
-                bool includes(T value);
+                    updateMiddleRightReduce();
 
-                List& slice(u64 start, u64 end);
+                    free(node);
+                    dataCount--;
 
-                void put(u64 index, T value) {
+                    return value;
+                }
+
+                auto indexOf(T value) {
+
+                    Node *node;
+                    ReturnType<u64> rty;
+
+                    u64 i;
+
+                    node = head;
+                    rty.type = Type::FAIL;
+                    i = 0;
+
+                    while (node != nullptr) {
+
+                        if (node->data == value) {
+
+                            rty.type = Type::SUCCESS;
+                            rty.data = i;
+                            break;
+                        }
+
+                        node = node->next;
+                        i++;
+                    }
+
+                    return rty;
+                }
+
+                List& reverse(void) {
 
                     Node *node;
                     Node *temp;
+                    Node *swap;
 
-                    u64 middle;
+                    node = head;
 
-                    node = &middleSearch(index);
-                    temp = new Node();
+                    temp = nullptr;
+                    swap = nullptr;
 
-                    middle = getMiddlePos();
+                    while (node != nullptr) {
 
-                    node->data = value;
+                        temp = node->next;
 
-                    if (index < middle) {
+                        swap = node->next;
+                        node->next = node->previous;
+                        node->previous = swap;
 
+                        node = temp;
 
-                    } else if (middle == index) {
-
-
-                    } else {
-
-                        
                     }
+
+                    if (dataCount > 3) {
+                        if (!(dataCount & 1)) midz = midz->previous;
+                    } else if (dataCount == 2) midz = tail;
+
+                    swap = head;
+                    head = tail;
+                    tail = swap;
+
+                    return *this;
                 }
 
-                void puts(u64);
+                bool includes(T value) {
+
+                    Node *node;
+
+                    node = head;
+
+                    while (node != nullptr) {
+
+                        if (node->data == value) return true;
+
+                        node = node->next;
+                    }
+
+                    return false;
+                }
+
+                List& slice(u64 start, u64 end) {
+
+                    List *copy;
+                    Node *node;
+                    Node *temp;
+
+                    copy = new List();
+                    node = nullptr;
+                    temp = nullptr;
+
+                    if (dataCount < end) end = dataCount;
+
+                    if (start < end) {
+
+                        end = end - start;
+
+                        temp = &middleSearch(start);
+
+                        while (!!end) {
+
+                            node = temp;
+                            copy->push(node->data);
+                            temp = node->next;
+                            end--;
+                        }
+                    }
+
+                    return *copy;
+                }
+
+                void puts(u64) {
+
+                }
 
                 template<typename... Args>
-                void puts(u64 index, T value, Args&&... arguments);
+                void puts(u64 index, T value, Args&&... arguments) {
+
+                    // List *copy;
+
+                    if (dataCount < index) return;
+                    else if (dataCount == index) push(value);
+                    else put(index, value);
+
+                    puts(index + 1, arguments...);
+
+                }
 
                 template<typename... Args>
-                List& splice(u64 start, u64 deleteCount, Args&&... arguments);
+                List& splice(u64 start, u64 deleteCount, Args&&... arguments) {
 
-                T& operator[](int index);
+                    List *copy;
+
+                    Node *node;
+                    Node *temp;
+                    
+                    u64 middle;
+                    
+                    copy = new List();
+
+                    node = nullptr;
+                    temp = nullptr;
+                    
+                    middle = 0;
+
+                    if (dataCount < (start + deleteCount)) deleteCount = dataCount;
+
+                    temp = &middleSearch(start);
+
+                    while (!!deleteCount) {
+
+                        node = temp;
+                        temp = node->next;
+
+                        middle = getMiddlePos();
+                        
+                        if (node != tail) node->next->previous = node->previous;
+                        else tail = node->previous;
+                        
+                        if (node != head) node->previous->next = node->next;
+                        else head = node->next;
+
+                        if (start < middle) updateMiddleLeftReduce();
+                        else if (middle == start) updateMiddleReduce();
+                        else updateMiddleRightReduce();
+
+                        copy->push(node->data);
+
+                        free(node);
+
+                        deleteCount--;
+                        dataCount--;
+                    }
+
+                    puts(start, arguments...);
+                    return *copy;
+                }
+
+                T& operator[](int index) {
+
+                    Node *node;
+
+                    node = &middleSearch(index);
+
+                    return node->data;
+                }
+
+                void display(void) {
+
+                    Node* node;
+                    node = head;
+
+                    std::string content;
+
+                    std::cout << "[ ";
+
+                    while (node != nullptr) {
+
+                        if (node != tail) std::cout << (int)(node->data) << ", ";
+                        else std::cout << (int)(node->data);
+
+                        node = node->next;
+                    }
+
+                    std::cout << " ]" << std::endl;
+                }
 
             // public
         };
