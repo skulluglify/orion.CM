@@ -130,5 +130,8 @@ int main(const int argc, const char** argv) noexcept {
         LOG((int)a[i])
     }
 
+    copy->destroy();
+    array->destroy();
+
     return 0;
 }

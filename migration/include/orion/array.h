@@ -26,7 +26,11 @@ extern "C++" {
 
                     T data;
 
-                    Node(void) {}
+                    Node(void) {
+
+                        previous = nullptr;
+                        next = nullptr;
+                    }
                     ~Node() {}
 
                 };
@@ -36,7 +40,12 @@ extern "C++" {
                     Node *begin;
                     Node *end;
 
-                    NodeIterator(void) {}
+                    NodeIterator(void) {
+
+                        begin = nullptr;
+                        end = nullptr;
+                        
+                    }
                     ~NodeIterator() {}
                 };
 
@@ -659,6 +668,26 @@ extern "C++" {
 
                 }
 
+                void destroy(void) {
+
+                    Node *node;
+                    Node *temp;
+
+                    node = head;
+                    temp = nullptr;
+
+                    while(node != nullptr) {
+
+                        temp = node->next;
+                        free(node);
+                        node = temp;
+                    }
+
+                    dataCount = 0;
+
+                    delete this;
+                }
+
             // public
         };
 
@@ -1118,6 +1147,26 @@ extern "C++" {
                         std::cout << " ]" << std::endl;
                     }
 
+                }
+
+                void destroy(void) {
+
+                    Node *node;
+                    Node *temp;
+
+                    node = head;
+                    temp = nullptr;
+
+                    while(node != nullptr) {
+
+                        temp = node->next;
+                        free(node);
+                        node = temp;
+                    }
+
+                    dataCount = 0;
+
+                    delete this;
                 }
 
             // public

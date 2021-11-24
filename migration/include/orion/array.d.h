@@ -61,6 +61,11 @@ extern "C++" {
 
                 T& operator[](int index);
 
+                template<typename _Cast>
+                void display(void);
+
+                void destroy(void):
+
             // public
         };
     };
@@ -119,6 +124,8 @@ extern "C++" {
 
                 template<typename _Cast>
                 void display(void);
+
+                void destroy(void):
 
             // public
         };

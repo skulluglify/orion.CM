@@ -35,6 +35,7 @@ int main(const int argc, const char** argv) noexcept {
         array->display<int>();
     }
 
+
     for (int i = 0; i < 10; i++) {
 
         LOG("================================")
@@ -43,7 +44,9 @@ int main(const int argc, const char** argv) noexcept {
         array->display<int>();
     }
 
+
     array = &copy->copy();
+
 
     for (int i = 5; i < 12; i++) {
 
@@ -126,6 +129,9 @@ int main(const int argc, const char** argv) noexcept {
 
         LOG((int)a[i])
     }
+
+    copy->destroy();
+    array->destroy();
 
     return 0;
 }
