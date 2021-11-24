@@ -12,6 +12,7 @@ int main(const int argc, const char** argv) noexcept {
     List *copy;
     array = new List();
 
+
     (void)(*array);
 
     for (int i = 0; i < 20; i++) {
@@ -22,7 +23,7 @@ int main(const int argc, const char** argv) noexcept {
         LOG((int)array->getitem(i).data);
         array->setitem(i, (u8)((i + 1) * 2));
         LOG("size:" << array->size())
-        array->display();
+        array->display<int>();
     }
 
     copy = &array->copy();
@@ -32,18 +33,21 @@ int main(const int argc, const char** argv) noexcept {
         LOG("================================")
 
         array->remove(0);
-        array->display();
+        array->display<int>();
     }
+
 
     for (int i = 0; i < 10; i++) {
 
         LOG("================================")
 
         array->remove(array->size() - 1);
-        array->display();
+        array->display<int>();
     }
 
+
     array = &copy->copy();
+
 
     for (int i = 5; i < 12; i++) {
 
@@ -52,17 +56,17 @@ int main(const int argc, const char** argv) noexcept {
         LOG(i)
 
         array->remove(i);
-        array->display();
+        array->display<int>();
     }
 
     array = &copy->concat(*array);
 
-    array->display();
+    array->display<int>();
 
     LOG((int)array->shift())
     LOG((int)array->pop())
 
-    array->display();
+    array->display<int>();
 
     LOG("size: " << array->size())
 
@@ -72,7 +76,7 @@ int main(const int argc, const char** argv) noexcept {
         LOG(array->indexOf(data).valueOf())
     }
 
-    array->display();
+    array->display<int>();
 
     array->reverse();
 
@@ -81,7 +85,7 @@ int main(const int argc, const char** argv) noexcept {
         array->setitem(i, data  + 1);
     }
 
-    array->display();
+    array->display<int>();
 
     for (u64 i = 0; i < array->size(); i++) {
         u8 data = array->getitem(i).valueOf();
@@ -89,43 +93,46 @@ int main(const int argc, const char** argv) noexcept {
         LOG((array->includes(data) ? "true" : "false"))
     }
 
-    array->display();
+    array->display<int>();
 
     copy = &array->copy();
 
     array = &array->slice(0, 4);
 
-    array->display();
+    array->display<int>();
 
     array = &copy->copy();
 
     array = &array->slice(4, array->size());
 
-    array->display();
+    array->display<int>();
 
     array = &copy->copy();
     
-    array->display();
+    array->display<int>();
 
     array->splice(2, 4);
 
-    array->display();
+    array->display<int>();
 
     array = &copy->copy();
     
     array->splice(2, 4, 1, 2, 3, 4, 12);
 
-    array->display();
+    array->display<int>();
 
-    List& a = *array;
+    List a = *array;
 
     a[1] = 64;
-    array->display();
+    array->display<int>();
 
     for (u64 i = 0; i < a.size(); i++) {
 
         LOG((int)a[i])
     }
+
+    copy->destroy();
+    array->destroy();
 
     return 0;
 }
