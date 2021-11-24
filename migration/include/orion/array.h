@@ -34,7 +34,7 @@ extern "C++" {
 
                 u64 dataCount;
 
-                Node& search(u64 index) {
+                Node& search(const u64& index) {
 
                     Node *node;
                     u64 i;
@@ -57,6 +57,9 @@ extern "C++" {
                 }
 
                 template<typename... Args>
+                friend List& _concat(List& array, Args&&... arguments);
+
+                template<typename... Args>
                 List& _concat(List& array, Args&&... arguments) {
 
                     List *copy;
@@ -67,7 +70,7 @@ extern "C++" {
                     temp = &_concat(arguments...);
 
                     if (!(temp->dataCount > 0)) return *copy;
-                    node = &(temp->first());
+                    node = temp->head;
 
                     while (node != nullptr) {
 
@@ -78,7 +81,7 @@ extern "C++" {
                     return *copy;
                 }
 
-                void put(u64 index, T value) {
+                void put(const u64& index, const T& value) {
 
                     Node *node;
                     Node *temp;
@@ -131,7 +134,7 @@ extern "C++" {
                 
                 ~List() {}
 
-                void push(T value) {
+                void push(const T& value) {
 
                     Node *node;
 
@@ -154,7 +157,7 @@ extern "C++" {
                     dataCount++;
                 }
 
-                auto getitem(u64 index) {
+                auto getitem(const u64& index) {
 
                     Node *node;
                     ReturnType<T> rty;
@@ -172,7 +175,7 @@ extern "C++" {
                     return rty;
                 }
 
-                void setitem(u64 index, T value) {
+                void setitem(const u64& index, const T& value) {
 
                     Node *node;
 
@@ -188,7 +191,7 @@ extern "C++" {
                     return dataCount;
                 }
 
-                void remove(u64 index) {
+                void remove(const u64& index) {
 
                     Node *node;
                     Node *prev;
@@ -277,7 +280,7 @@ extern "C++" {
                     return data;
                 }
 
-                auto indexOf(T value) {
+                auto indexOf(const T& value) {
 
                     Node *node;
                     ReturnType<u64> rty;
@@ -330,7 +333,7 @@ extern "C++" {
                     return *this;
                 }
 
-                bool includes(T value) {
+                bool includes(const T& value) {
 
                     Node *node;
 
@@ -378,7 +381,7 @@ extern "C++" {
                 }
 
                 template<typename... Args>
-                void puts(u64 index, T value, Args&&... arguments) {
+                void puts(const u64& index, T value, Args&&... arguments) {
 
                     if (dataCount < index) return;
                     else if (dataCount == index) push(value);
@@ -429,7 +432,7 @@ extern "C++" {
                     return *copy;
                 }
 
-                T& operator[](u64 index) {
+                T& operator[](const u64& index) {
 
                     if (!(index < dataCount)) return (new Node())->data;
 
@@ -543,7 +546,7 @@ extern "C++" {
                     return ((m_size & 1) == 1 ? (m_size + 1) / 2 : m_size / 2) - 1;
                 }
 
-                Node& middleSearchChild(u64 index, u64 m_size, NodeIterator nodeIterator) {
+                Node& middleSearchChild(const u64& index, u64 m_size, NodeIterator nodeIterator) {
 
                     Node *node;
                     u64 middle, i;
@@ -582,7 +585,7 @@ extern "C++" {
                     return *node;
                 }
 
-                Node& middleSearch(u64 index) {
+                Node& middleSearch(const u64& index) {
 
                     Node *node;
                     NodeIterator nodeIterator;
@@ -708,6 +711,9 @@ extern "C++" {
                 }
 
                 template<typename... Args>
+                friend List& _concat(List& array, Args&&... arguments);
+
+                template<typename... Args>
                 List& _concat(List& array, Args&&... arguments) {
 
                     List *copy;
@@ -718,7 +724,7 @@ extern "C++" {
                     temp = &_concat(arguments...);
 
                     if (!(temp->dataCount > 0)) return *copy;
-                    node = &(temp->first());
+                    node = temp->head;
 
                     while (node != nullptr) {
 
@@ -729,7 +735,7 @@ extern "C++" {
                     return *copy;
                 }
 
-                void put(u64 index, T value) {
+                void put(const u64& index, const T& value) {
 
                     Node *node;
                     Node *temp;
@@ -775,7 +781,7 @@ extern "C++" {
                 
                 ~List() {}
 
-                void push(T value) {
+                void push(const T& value) {
 
                     Node *node;
 
@@ -803,7 +809,7 @@ extern "C++" {
                     dataCount++;
                 }
 
-                auto getitem(u64 index) {
+                auto getitem(const u64& index) {
 
                     Node *node;
                     ReturnType<T> rty;
@@ -821,7 +827,7 @@ extern "C++" {
                     return rty;
                 }
 
-                void setitem(u64 index, T value) {
+                void setitem(const u64& index, const T& value) {
 
                     Node *node;
 
@@ -837,7 +843,7 @@ extern "C++" {
                     return dataCount;
                 }
 
-                void remove(u64 index) {
+                void remove(const u64& index) {
 
 
                     Node *node;
@@ -942,7 +948,7 @@ extern "C++" {
                     return value;
                 }
 
-                auto indexOf(T value) {
+                auto indexOf(const T& value) {
 
                     Node *node;
                     ReturnType<u64> rty;
@@ -1003,7 +1009,7 @@ extern "C++" {
                     return *this;
                 }
 
-                bool includes(T value) {
+                bool includes(const T& value) {
 
                     Node *node;
 
@@ -1051,7 +1057,7 @@ extern "C++" {
                 }
 
                 template<typename... Args>
-                void puts(u64 index, T value, Args&&... arguments) {
+                void puts(const u64& index, T value, Args&&... arguments) {
 
                     if (dataCount < index) return;
                     else if (dataCount == index) push(value);
@@ -1110,7 +1116,7 @@ extern "C++" {
                     return *copy;
                 }
 
-                T& operator[](u64 index) {
+                T& operator[](const u64& index) {
 
                     if (!(index < dataCount)) return (new Node())->data;
 
