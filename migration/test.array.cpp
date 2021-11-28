@@ -12,6 +12,7 @@ int main(const int argc, const char** argv) noexcept {
     List *copy;
     array = new List();
 
+
     (void)(*array);
 
     for (int i = 0; i < 20; i++) {
@@ -120,7 +121,7 @@ int main(const int argc, const char** argv) noexcept {
 
     array->display<int>();
 
-    List& a = *array;
+    List a = *array;
 
     a[1] = 64;
     array->display<int>();
