@@ -4,58 +4,58 @@
 
 class Parent {
 
-	private:
+    private:
 
-		const char* name = "udin";
-		
-	public:
+        const char* name = "udin";
+        
+    public:
 
-		virtual void print(void) {
+        virtual void print(void) {
 
-			LOG(name)
-		}
+            LOG(name)
+        }
 
-		friend void printName(const Parent& parent);
+        friend void printName(const Parent& parent);
 };
 
 class Children: public Parent {
 
-	private:
+    private:
 
-		const char* name = "syafiq";
-		
-	public:
+        const char* name = "syafiq";
+        
+    public:
 
-		void print(void) override {
+        void print(void) override {
 
-			LOG(name)
-		}
+            LOG(name)
+        }
 
-		friend void printName(const Children& children);
+        friend void printName(const Children& children);
 };
 
 void printName(const Parent& parent) {
 
-	LOG(parent.name)
+    LOG(parent.name)
 }
 
 
 void printName(const Children& children) {
 
-	LOG(children.name)
+    LOG(children.name)
 }
 
 int main(const int argc, const char** argv) noexcept {
 
-	(void)argc;
-	(void)argv;
+    (void)argc;
+    (void)argv;
 
-	Parent parent;
-	Children children;
-	parent.print();
-	children.print();
-	printName(parent);
-	printName(children);
+    Parent parent;
+    Children children;
+    parent.print();
+    children.print();
+    printName(parent);
+    printName(children);
 
-	return 0;
+    return 0;
 }

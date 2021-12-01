@@ -11,7 +11,6 @@
 #ifdef __cplusplus
 extern "C++" {
 
-    // pass
     namespace Ex {
 
         template<typename T>
@@ -24,44 +23,69 @@ extern "C++" {
                     std::string key = "";
                     T& value = *(new T);
 
+                    struct Item* next;
+
                     Item(void) {
 
-                        // re initialized
+                        // re-initialized
                         key = "";
                         value = *(new T);
                     }
                     ~Item() {}
                 };
 
-                typedef Se::List<Item*> ListItem;
-                typedef Se::List<const char*> ListKey;
+                typedef Ex::List<const char*> ListKey;
 
-                ListItem& _Dict_data_items = *(new ListItem);
+                Item* first; // like head
+                Item* last; // like tail
+            
+            // private
 
             public:
 
                 Dict(void) {
 
-                    // re initialized
-                    _Dict_data_items = *(new ListItem);
+                    // re-initialized
+                    first = nullptr;
+                    last = nullptr;
                 }
 
                 ~Dict() {}
+
+                void set(const char* key, const T& value) { // unique
+
+                    Item* item;
+                    item = new Item;
+                    item->key = key;
+                    item->value = value;
+
+                    if (!find(key)) {
+
+                        if (first == nullptr) {
+
+                            first = item;
+                            last = item;
+
+                        } else {
+
+                            last->next = item;
+                            last = item;
+
+                        }
+                    }
+                }
 
                 void setitem(const char* key, const T& value) {
 
                     Item* item = nullptr;
 
-                    for (u64 i = 0; i < _Dict_data_items.size(); i++) {
+                    item = first;
 
-                        item = _Dict_data_items[i];
-                        if (item->key == key) {
-                            item->value = value;
-                            break;
-                        }
+                    while (item != nullptr) {
+
+                        if (item->key == key) item->value = value;
+                        item = item->next;
                     }
-
-                    // if not found? goto garbage
                 }
 
                 T& getitem(const char* key) {
@@ -72,13 +96,15 @@ extern "C++" {
 
                     finding = false;
 
-                    for (u64 i = 0; i < _Dict_data_items.size(); i++) {
+                    item = first;
 
-                        item = _Dict_data_items[i];
+                    while (item != nullptr) {
+
                         if (item->key == key) {
                             finding = true;
                             break;
                         }
+                        item = item->next;
                     }
 
                     if (!finding) return (new Item)->value; // garbage
@@ -86,32 +112,43 @@ extern "C++" {
                     return item->value;
                 }
                 
-                T& operator[] (const char* key) {
+                T& operator[] (const char* key) { // set auto
                     
                     Item* item = nullptr;
 
                     bool finding;
 
+                    item = first;
                     finding = false;
 
-                    for (u64 i = 0; i < _Dict_data_items.size(); i++) {
+                    if (item == nullptr) {
 
-                        item = _Dict_data_items[i];
-                        if (item->key == key) {
-                            finding = true;
-                            break;
+                        item = new Item;
+                        item->key = key;
+                        first = item;
+                        last = item;
+                        
+                    } else {
+
+                        while (item != nullptr) {
+
+                            if (item->key == key) {
+                                finding = true;
+                                break;
+                            }
+                            item = item->next;
+                        }
+
+                        if (!finding) {
+                        
+                            item = new Item;
+                            item->key = key;
+                            last->next = item;
+                            last = item;
                         }
                     }
 
-                    if (!finding) {
-                    
-                        item = new Item;
-                        item->key = key;
-                        _Dict_data_items.push(item);
-                    }
-
                     return item->value;
-
                 }
 
                 bool find(const char* key) {
@@ -120,10 +157,12 @@ extern "C++" {
 
                     item = new Item;
 
-                    for (u64 i = 0; i < _Dict_data_items.size(); i++) {
+                    item = first;
 
-                        item = _Dict_data_items[i];
+                    while (item != nullptr) {
+
                         if (item->key == key) return true;
+                        item = item->next;
                     }
 
                     return false;
@@ -132,15 +171,17 @@ extern "C++" {
                 auto& keys(void) {
 
                     Item* item = nullptr;
-                    ListKey& listkeys = *(new ListKey);
+                    ListKey& list = *(new ListKey);
 
-                    for (u64 i = 0; i < _Dict_data_items.size(); i++) {
+                    item = first;
 
-                        item = _Dict_data_items[i];
-                        listkeys.push(item->key.c_str());
+                    while (item != nullptr) {
+
+                        list.push(item->key.c_str());
+                        item = item->next;
                     }
 
-                    return listkeys;
+                    return list;
                 }
             
             // public

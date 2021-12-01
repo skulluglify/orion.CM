@@ -24,7 +24,10 @@ extern "C++" {
 
                     T data;
 
-                    Node(void) {}
+                    Node(void) {
+
+                        next = nullptr;
+                    }
                     ~Node() {}
 
                 };
@@ -129,10 +132,31 @@ extern "C++" {
 
                     head = nullptr;
                     tail = nullptr;
+                    
                     dataCount = 0;
                 }
+
+                // List(List& other) { // conflict by copy-function
+                //     List();
+                //     Node* node;
+                //     node = other.head;
+                //     while (node != nullptr) {
+                //         this->push(node->data);
+                //         node = node->next;
+                //     }
+                // }
                 
                 ~List() {}
+
+                // auto& firstNode(void) {
+                //     if (head == nullptr) return *(new Node);
+                //     return *head;
+                // }
+
+                // auto& lastNode(void) {
+                //     if (tail == nullptr) return *(new Node);
+                //     return *tail;
+                // }
 
                 void push(const T& value) {
 
@@ -778,8 +802,38 @@ extern "C++" {
                     dataCount = 0;
 
                 }
+
+                // List(List& other) { // conflict by copy-function
+                //     List();
+                //     Node* node;
+                //     node = other.head;
+                //     while (node != nullptr) {
+                //         this->push(node->data);
+                //         node = node->next;
+                //     }
+                // }
+
+                List(Se::List<T>& other) {
+
+                    List();
+
+                    for(u64 i = 0; i < other.size(); i++) {
+                        
+                        this->push(other.getitem(i));
+                    }
+                }
                 
                 ~List() {}
+
+                // auto& firstNode(void) {
+                //     if (head == nullptr) return *(new Node);
+                //     return *head;
+                // }
+
+                // auto& lastNode(void) {
+                //     if (tail == nullptr) return *(new Node);
+                //     return *tail;
+                // }
 
                 void push(const T& value) {
 

@@ -5,6 +5,7 @@
 #include"dtype.h"
 #include"debug.h"
 #include"array.h"
+#include"string.h"
 #include"object.h"
 
 #ifdef __cplusplus

@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-MAIN="test.object"
+MAIN="test.string"
 
 CFLAGS="-Wall -Wextra -Werror -Wunused-parameter -Wunused-variable -Wpedantic -Wsign-compare -O3 -fpic -fno-plt"
 
