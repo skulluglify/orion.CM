@@ -68,12 +68,17 @@ void push(String& str, u32 v) {
     str.push(v);
 }
 
+void push(vchar& vc, u32 v) {
+    vc.push(v);
+}
+
 int main(const int argc, const char** argv) noexcept {
 
     (void)argc;
     (void)argv;
 
     String str;
+    String cpy;
 
     push(str, (int)'H');
     push(str, (int)'e');
@@ -105,6 +110,50 @@ int main(const int argc, const char** argv) noexcept {
     displayByBin(utf32);
 
     std::cout << std::endl;
+
+    cpy.utf32decode(utf32);
+
+    auto& cutf8 = cpy.utf8encode();
+
+    displayByBin(cutf8);
+
+    vchar vc;
+
+    push(vc, (int)'H');
+    push(vc, (int)'e');
+    push(vc, (int)'l');
+    push(vc, (int)'l');
+    push(vc, (int)'o');
+    push(vc, (int)' ');
+    push(vc, (int)'W');
+    push(vc, (int)'o');
+    push(vc, (int)'r');
+    push(vc, (int)'l');
+    push(vc, (int)'d');
+    push(vc, (int)'!');
+    push(vc, (int)' ');
+    push(vc, 128513); // octal
+    push(vc, 0); // octal
+    push(vc, 0); // octal
+    push(vc, 0); // octal
+
+    std::cout << std::endl;
+
+    displayByBin(vc.getBuffer());
+
+    std::cout << std::endl;
+
+    LOG("size: " << vc.size())
+
+    std::cout << std::endl;
+    
+    displayByBin(vc.utf32encode());
+    
+    std::cout << std::endl;
+    
+    String test(vc.utf32encode());
+
+    displayByBin(test.utf16encode());
 
     return 0;
 }
