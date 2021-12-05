@@ -1,0 +1,9 @@
+1XXXXXXX 1XXXXXXX 1XXXXXXX 0XXXXXXX
+
+complement + complement + complement + positive
+
+positive (break-point | next)
+
+28 bits
+
+fast - lightweight
