@@ -136,6 +136,10 @@ int main(const int argc, const char** argv) noexcept {
     push(vc, 0); // octal
     push(vc, 0); // octal
     push(vc, 0); // octal
+    push(vc, 0); // octal
+    push(vc, 0); // octal
+    push(vc, 0); // octal
+    push(vc, 0); // octal
 
     std::cout << std::endl;
 
@@ -144,16 +148,27 @@ int main(const int argc, const char** argv) noexcept {
     std::cout << std::endl;
 
     LOG("size: " << vc.size())
+    LOG("realSize: " << vc.realSize())
 
     std::cout << std::endl;
+
+    utf8buffer a = vc.utf8encode();
     
-    displayByBin(vc.utf32encode());
+    displayByBin(a);
     
     std::cout << std::endl;
     
-    String test(vc.utf32encode());
+    // String test(vc.utf32encode());
 
-    displayByBin(test.utf16encode());
+    utf16buffer b = vc.utf16encode();
+
+    displayByBin(b);
+
+    std::cout << std::endl;
+
+    utf32buffer c = vc.utf32encode();
+
+    displayByBin(c);
 
     return 0;
 }

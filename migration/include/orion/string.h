@@ -15,7 +15,7 @@
 #ifdef __cplusplus
 extern "C++" {
 
-    enum TypeChar {
+    enum typechar {
 
         UTF_8,
         UTF_16,
@@ -29,9 +29,14 @@ extern "C++" {
 
     namespace CodeCVT {
 
-        struct UTF8 {
+        struct UTF_8 {
 
-            u32 codePointAt(u32 n) { // uchar to oct
+            enum {
+
+                SIZE_BITES_PER_CHAR = 8,
+            };
+
+            u32 codePointAt(u32& n) { // uchar to oct
 
                 if      (n < 0x100    ) return n;
                 else if (n < 0x10000  ) return                             ((n & 0x1F00) >> 2) + (n & 0x3F);
@@ -40,7 +45,7 @@ extern "C++" {
                 else return ((n & 0x7000000) >> 6) + ((n & 0x3F0000) >> 4) + ((n & 0x3F00) >> 2) + (n & 0x3F);
             }
 
-            u32 fromCodePoint(u32 n) { // oct to uchar
+            u32 fromCodePoint(u32& n) { // oct to uchar
 
                 // 0o77       0x3f
                 // 0o7700     0xfc0
@@ -56,9 +61,14 @@ extern "C++" {
 
         };
 
-        struct UTF16 {
+        struct UTF_16 {
 
-            u32 codePointAt(u32 n) { // uchar to oct
+            enum {
+
+                SIZE_BITES_PER_CHAR = 16,
+            };
+
+            u32 codePointAt(u32& n) { // uchar to oct
 
                 if (n < 0x10000) return n;
                 else {
@@ -69,7 +79,7 @@ extern "C++" {
                 }
             }
 
-            u32 fromCodePoint(u32 n) { // oct to uchar
+            u32 fromCodePoint(u32& n) { // oct to uchar
 
                 if (n < 0x10000) return n;
                 else {
@@ -81,54 +91,59 @@ extern "C++" {
             }
         };
 
-        struct UTF32 {
+        struct UTF_32 {
 
-            u32 codePointAt(u32 n) { // uchar to oct
+            enum {
+
+                SIZE_BITES_PER_CHAR = 32,
+            };
+
+            u32 codePointAt(u32& n) { // uchar to oct
 
                 return n;
             }
 
-            u32 fromCodePoint(u32 n) { // oct to uchar
+            u32 fromCodePoint(u32& n) { // oct to uchar
 
                 return n;
             }
         };
     };
 
-    struct VirtualChar {
+    struct defchar {
 
         u32 data;
-        TypeChar type;
+        typechar type;
 
-        void init(u32& n) {
+        void define(u32& n) {
 
             data = n;
             
-            if (n < 0x80) type = TypeChar::UTF_8;
-            else if (n < 0x10000) type = TypeChar::UTF_16;
-            else type = TypeChar::UTF_32;
+            if (n < 0x80) type = typechar::UTF_8;
+            else if (n < 0x10000) type = typechar::UTF_16;
+            else type = typechar::UTF_32;
         
         }
 
-        VirtualChar(void) {
+        defchar(void) {
 
             data = 0;
-            type = TypeChar::UTF_8;
+            type = typechar::UTF_8;
         
         }
 
-        VirtualChar(u32& n) {
+        defchar(u32& n) {
 
-            VirtualChar();
-            init(n);
+            defchar();
+            define(n);
 
         }
 
-        ~VirtualChar() {}
+        ~defchar() {}
 
     };
 
-    typedef Ex::List<VirtualChar> xlist;
+    typedef Ex::List<defchar> xlist;
     typedef Ex::List<u8> utf8buffer;
     typedef Ex::List<u16> utf16buffer;
     typedef Ex::List<u32> utf32buffer;
@@ -154,6 +169,150 @@ extern "C++" {
             
             u64 mark;
             u8 pack;
+
+        public:
+
+            template<typename T, class CVT>
+            static void sliceBufferChar(u32& n, T& buffer) {
+
+                defchar virtchar;
+
+                CVT cvt;
+
+                switch ((u8)cvt.SIZE_BITES_PER_CHAR) { // cvtSize
+
+                    case CodeCVT::UTF_32::SIZE_BITES_PER_CHAR:
+                        buffer.push(cvt.fromCodePoint(n));
+
+                        break;
+
+                    case CodeCVT::UTF_16::SIZE_BITES_PER_CHAR:
+                        virtchar.define(n);
+
+                        if (virtchar.type == typechar::UTF_8 || virtchar.type == typechar::UTF_16) buffer.push(virtchar.data);
+                        else {
+                            n = cvt.fromCodePoint(virtchar.data);
+                            buffer.push((n >> 16) & 0xFFFF);
+                            buffer.push(n & 0xFFFF);
+                        }
+                        break;
+
+                    case CodeCVT::UTF_8::SIZE_BITES_PER_CHAR:
+                        virtchar.define(n);
+
+                        if (virtchar.type == typechar::UTF_8) buffer.push(virtchar.data);
+                        else {
+
+                            n = cvt.fromCodePoint(virtchar.data);
+
+                            u8 p;
+                            u8 v;
+
+                            p = 32;
+                            v = 0;
+
+                            do {
+
+                                p = p - 8;
+
+                                v = (n >> p) & 0xFF;
+
+                                if (v != 0x00) buffer.push(v);
+
+                            } while (p != 0x00);
+                        }
+                        break;
+                    
+                    default:
+                        break;
+                }
+            }
+
+        private:
+
+            template<typename T, class CVT>
+            auto& decode(void) {
+
+                u8 p;
+                u8 r;
+                u8 m;
+
+                u32 c;
+
+                bool h;
+
+                T& temp = *(new T);
+                
+                p = 4;
+                r = 0;
+                m = 0;
+                c = 0;
+
+                h = true;
+
+                u64 i;
+                i = 0;
+
+                u64 n = buffer.size();
+
+                u8 x;
+
+                for (u64 _ = 0; _ < n; _++) {
+
+                    // get mark
+                    if (h) {
+                        
+                        m = buffer[i];
+                        h = false;
+                        i++;
+                        continue;
+                    }
+
+
+                    // get range
+                    r = (m >> ((p - 1) * 2)) & 0x03;
+                    r = r + 1;
+
+                    for (u8 j = 0; j < r; j++) {
+
+                        x = i + j;
+
+                        if (x < n) {
+
+                            c += buffer[x] << ((r - j - 1) * 8);
+                        }
+
+                        // i++;
+                    }
+
+                    u32 t;
+                    t = c;
+
+                    if (r > 1 && t == 0x00) break;
+
+                    // utf8 slice 4
+                    // utf16 slice 2
+                    // utf32 slice 1
+
+                    // cvt cvtSize buffer
+
+                    sliceBufferChar<T, CVT>(t, temp);
+
+
+                    c = 0;
+
+                    // update pack
+                    p = (p != 1 ? p - 1 : 4);
+
+                    if (p == 4) h = true;
+
+                    // update pos
+                    // i++;
+                    i = i + r;
+                }
+
+                return temp;
+            }
 
         public:
 
@@ -215,7 +374,7 @@ extern "C++" {
 
                 ir = ((pack - 1) * 2);
 
-                i = 6 - ir;
+                i = 6 - ir; // ((4 - 1) * 2) - ir
 
                 R = ((1 << ir) - 1);
 
@@ -247,74 +406,29 @@ extern "C++" {
                 return count;
             }
 
+            u64 realSize(void) {
+
+                return buffer.size();
+            }
+
             auto& getBuffer(void) {
 
                 return buffer;
             }
 
+            auto& utf8encode(void) {
+
+                return decode<utf8buffer, CodeCVT::UTF_8>();
+            }
+
+            auto& utf16encode(void) {
+
+                return decode<utf16buffer, CodeCVT::UTF_16>();
+            }
+
             auto& utf32encode(void) {
 
-                u8 p;
-                u8 r;
-                u8 m;
-                u32 c;
-
-                bool h;
-
-                utf32buffer& temp = *(new utf32buffer);
-                
-                p = 4;
-                r = 0;
-                m = 0;
-                c = 0;
-
-                h = true;
-
-                u64 i;
-                i = 0;
-
-                while (true) {
-
-                    // get mark
-                    if (h) {
-                        
-                        m = buffer[i];
-                        h = false;
-                        i++;
-                        continue;
-                    }
-
-
-                    // get range
-                    r = (m >> ((p - 1) * 2)) & 0x03;
-                    r = r + 1;
-
-                    for (u8 j = 0; j < r; j++) {
-
-                        c += buffer[i + j] << ((r - j - 1) * 8);
-
-                        // i++;
-                    }
-
-                    u32 t;
-                    t = c;
-
-                    if (r > 1 && t == 0x00) break;
-
-                    temp.push(t);
-                    c = 0;
-
-                    // update pack
-                    p = (p != 1 ? p - 1 : 4);
-
-                    if (p == 4) h = true;
-
-                    // update pos
-                    // i++;
-                    i = i + r;
-                }
-
-                return temp;
+                return decode<utf32buffer, CodeCVT::UTF_32>();
             }
     };
 
@@ -344,87 +458,107 @@ extern "C++" {
 
             void push(u32& data) {
 
-                // VirtualChar virtchar(data);
+                // defchar virtchar(data);
                 // LOG(sizeof(virtchar))
                 buffer.push(data);
             }
 
             auto& utf8encode(void) {
 
-                utf8buffer& ulist = *(new utf8buffer);
-                VirtualChar virtchar;
-                CodeCVT::UTF8 cvt;
-                TypeChar utf8 = UTF_8;
+                // utf8buffer& ulist = *(new utf8buffer);
+                // defchar virtchar;
+                // CodeCVT::UTF_8 cvt;
+                // typechar utf8 = UTF_8;
 
-                u8 v;
-                u32 n;
+                // u8 v;
+                // u32 n;
+
+                // for (u64 i = 0; i < buffer.size(); i++) {
+
+
+                //     virtchar.define(buffer[i]);
+
+                //     if (virtchar.type == utf8) ulist.push(virtchar.data);
+                //     else {
+
+                //         n = cvt.fromCodePoint(virtchar.data);
+
+                //         u8 p = 32;
+
+                //         do {
+
+                //             p = p - 8;
+
+                //             v = (n >> p) & 0xFF;
+
+                //             if (v != 0x00) ulist.push(v);
+
+                //         } while (p != 0x00);
+                //     }
+                // }
+
+                // return ulist;
+
+                utf8buffer& temp = *(new utf8buffer);
 
                 for (u64 i = 0; i < buffer.size(); i++) {
-
-
-                    virtchar.init(buffer[i]);
-
-                    if (virtchar.type == utf8) ulist.push(virtchar.data);
-                    else {
-
-                        n = cvt.fromCodePoint(virtchar.data);
-
-                        u8 p = 32;
-
-                        do {
-
-                            p = p - 8;
-
-                            v = (n >> p) & 0xFF;
-
-                            if (v != 0x00) ulist.push(v);
-
-                        } while (p != 0x00);
-                    }
+                    vchar::sliceBufferChar<utf8buffer, CodeCVT::UTF_8>(buffer[i], temp);
                 }
 
-                return ulist;
+
+                // return buffer.copy();
+                return temp;
             }
 
             auto& utf16encode(void) {
 
-                utf16buffer& ulist = *(new utf16buffer);
-                VirtualChar virtchar;
-                CodeCVT::UTF16 cvt;
-                TypeChar utf8 = UTF_8;
-                TypeChar utf16 = UTF_16;
+                // utf16buffer& ulist = *(new utf16buffer);
+                // defchar virtchar;
+                // CodeCVT::UTF_16 cvt;
+                // typechar utf8 = UTF_8;
+                // typechar utf16 = UTF_16;
 
-                u32 n;
+                // u32 n;
+
+                // for (u64 i = 0; i < buffer.size(); i++) {
+
+
+                //     virtchar.define(buffer[i]);
+
+                //     if (virtchar.type == utf8 || virtchar.type == utf16) ulist.push(virtchar.data);
+                //     else {
+                //         n = cvt.fromCodePoint(virtchar.data);
+                //         ulist.push((n >> 16) & 0xFFFF);
+                //         ulist.push(n & 0xFFFF);
+                //     }
+                // }
+
+                // return ulist;
+
+                utf16buffer& temp = *(new utf16buffer);
 
                 for (u64 i = 0; i < buffer.size(); i++) {
-
-
-                    virtchar.init(buffer[i]);
-
-                    if (virtchar.type == utf8 || virtchar.type == utf16) ulist.push(virtchar.data);
-                    else {
-                        n = cvt.fromCodePoint(virtchar.data);
-                        ulist.push((n >> 16) & 0xFFFF);
-                        ulist.push(n & 0xFFFF);
-                    }
+                    vchar::sliceBufferChar<utf16buffer, CodeCVT::UTF_16>(buffer[i], temp);
                 }
 
-                return ulist;
+
+                // return buffer.copy();
+                return temp;
             }
 
             auto& utf32encode(void) {
 
                 // utf32buffer& ulist = *(new utf32buffer);
-                // VirtualChar virtchar;
-                // // CodeCVT::UTF32 cvt;
-                // // TypeChar utf8 = UTF_8;
-                // // TypeChar utf16 = UTF_16;
-                // // TypeChar utf32 = UTF_32;
+                // defchar virtchar;
+                // // CodeCVT::UTF_32 cvt;
+                // // typechar utf8 = UTF_8;
+                // // typechar utf16 = UTF_16;
+                // // typechar utf32 = UTF_32;
 
                 // for (u64 i = 0; i < buffer.size(); i++) {
 
 
-                //     virtchar.init(buffer[i]);
+                //     virtchar.define(buffer[i]);
 
                 //     // if (virtchar.type == utf8 || virtchar.type == utf16 || virtchar.type == utf32) ulist.push(virtchar.data);
                 //     // else ulist.push(cvt.fromCodePoint(virtchar.data));
@@ -433,7 +567,15 @@ extern "C++" {
 
                 // return ulist;
 
-                return buffer.copy();
+                utf32buffer& temp = *(new utf32buffer);
+
+                for (u64 i = 0; i < buffer.size(); i++) {
+                    vchar::sliceBufferChar<utf32buffer, CodeCVT::UTF_32>(buffer[i], temp);
+                }
+
+
+                // return buffer.copy();
+                return temp;
             }
 
             void utf8decode(utf8buffer raw) {
@@ -447,7 +589,7 @@ extern "C++" {
                 u32 r;
                 u32 d;
 
-                CodeCVT::UTF8 cvt;
+                CodeCVT::UTF_8 cvt;
                 
                 b = 0;
                 r = 1;
@@ -487,7 +629,7 @@ extern "C++" {
                 u32 r;
                 u32 d;
 
-                CodeCVT::UTF16 cvt;
+                CodeCVT::UTF_16 cvt;
                 
                 b = 0;
                 r = 1;
@@ -516,7 +658,7 @@ extern "C++" {
 
             void utf32decode(utf32buffer raw) {
 
-                CodeCVT::UTF32 cvt;
+                CodeCVT::UTF_32 cvt;
 
                 for (u64 i = 0; i < raw.size(); i++) {
 
