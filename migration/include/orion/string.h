@@ -10,8 +10,6 @@
 #include"debug.h"
 #include"array.h"
 
-#define BS(x) std::cout << std::bitset<8>(x) << std::endl;
-
 #ifdef __cplusplus
 extern "C++" {
 

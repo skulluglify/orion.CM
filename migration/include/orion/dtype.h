@@ -25,9 +25,17 @@ extern "C++" {
 
             enum Type {
 
-                FAIL,
-                SUCCESS,
-                
+                NONE     = 0x00,
+                EMPTY    = 0x00,
+                FAIL     = 0x00,
+                SUCCESS  = 0x20,
+                NUMBER   = 0x01,
+                INFINITE = 0x02,
+                ARRAY    = 0xA0,
+                STRING   = 0xA1,
+                SYMBOL   = 0xA2,
+                OBJECT   = 0xB0,
+                FUNCTION = 0xC0,
             };
 
             template<typename T>
@@ -42,6 +50,10 @@ extern "C++" {
                 }
 
             };
+
+            // TODOs
+            // VarType
+            // built in Cast Int Pointer
 
         };
         

@@ -6,8 +6,10 @@
 
 #ifndef PRODUCTION
     #define LOG(x) std::cout << x << std::endl;
+    #define BS(x) std::cout << std::bitset<8>(x) << std::endl;
 #else
     #define LOG(x)
+    #define BS(x)
 #endif
 
 #ifdef __cplusplus
