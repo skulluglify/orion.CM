@@ -20,7 +20,7 @@ extern "C++" {
 
                 struct Node {
 
-                    struct Node *next;
+                    struct Node* next;
 
                     T data;
 
@@ -32,23 +32,21 @@ extern "C++" {
 
                 };
 
-                Node *head;
-                Node *tail;
+                Node* head;
+                Node* tail;
 
                 u64 dataCount;
 
                 Node& search(const u64& index) {
 
-                    Node *node;
-                    u64 i;
+                    Node* node;
 
                     node = head;
-                    i = 0;
 
-                    while (!(index == i)) {
+                    for (u64 i = 0; i < dataCount; i++) {
 
+                        if (index == i) break;
                         node = node->next;
-                        i++;
                     }
 
                     return *node;
@@ -65,9 +63,9 @@ extern "C++" {
                 template<typename... Args>
                 List& _concat(List& array, Args&&... arguments) {
 
-                    List *copy;
-                    List *temp;
-                    Node *node;
+                    List* copy;
+                    List* temp;
+                    Node* node;
 
                     copy = &(array.copy());
                     temp = &_concat(arguments...);
@@ -86,9 +84,9 @@ extern "C++" {
 
                 void put(const u64& index, const T& value) {
 
-                    Node *curr;
-                    Node *node;
-                    Node *prev;
+                    Node* curr;
+                    Node* node;
+                    Node* prev;
 
                     node = new Node();
                     prev = nullptr;
@@ -186,7 +184,7 @@ extern "C++" {
 
                 void push(const T& value) {
 
-                    Node *node;
+                    Node* node;
 
                     node = new Node();
 
@@ -209,7 +207,7 @@ extern "C++" {
 
                 auto getitem(const u64& index) {
 
-                    Node *node;
+                    Node* node;
                     ReturnType<T> rty;
 
                     rty.type = Type::FAIL;
@@ -227,7 +225,7 @@ extern "C++" {
 
                 void setitem(const u64& index, const T& value) {
 
-                    Node *node;
+                    Node* node;
 
                     if (index < dataCount) {
 
@@ -243,8 +241,8 @@ extern "C++" {
 
                 void remove(const u64& index) {
 
-                    Node *node;
-                    Node *prev;
+                    Node* node;
+                    Node* prev;
 
                     if (!(index < dataCount)) return;
 
@@ -283,8 +281,8 @@ extern "C++" {
 
                 List& copy(void) {
 
-                    List *temp;
-                    Node *node;
+                    List* temp;
+                    Node* node;
 
                     node = head;
                     temp = new List();
@@ -324,7 +322,7 @@ extern "C++" {
 
                 T& shift(void) {
 
-                    Node *node;
+                    Node* node;
                     T data;
 
                     node = head;
@@ -336,14 +334,14 @@ extern "C++" {
                     
                     T& refdata = *(new T);
                     refdata = data;
-                    
+
                     return refdata;
                 }
                 
                 T& pop(void) {
 
-                    Node *node;
-                    Node *prev;
+                    Node* node;
+                    Node* prev;
                     T data;
                     
                     node = tail;
@@ -370,7 +368,7 @@ extern "C++" {
 
                 auto indexOf(const T& value) {
 
-                    Node *node;
+                    Node* node;
                     ReturnType<u64> rty;
                     // u64 i;
 
@@ -408,9 +406,9 @@ extern "C++" {
 
                 List& reverse(void) {
 
-                    Node *node;
-                    Node *prev;
-                    Node *swap;
+                    Node* node;
+                    Node* prev;
+                    Node* swap;
 
                     node = head;
 
@@ -444,7 +442,7 @@ extern "C++" {
 
                 bool includes(const T& value) {
 
-                    Node *node;
+                    Node* node;
 
                     node = head;
                     
@@ -468,8 +466,8 @@ extern "C++" {
 
                 List& slice(u64 start, u64 end) {
 
-                    List *temp;
-                    Node *node;
+                    List* temp;
+                    Node* node;
 
                     temp = new List();
                     node = nullptr;
@@ -510,11 +508,11 @@ extern "C++" {
                 template<typename... Args>
                 List& splice(u64 start, u64 deleteCount, Args&&... arguments) {
 
-                    List *copy;
+                    List* copy;
 
-                    Node *node;
-                    Node *swap;
-                    Node *prev;
+                    Node* node;
+                    Node* swap;
+                    Node* prev;
 
                     copy = new List();
 
@@ -576,7 +574,7 @@ extern "C++" {
 
                     if (!(index < dataCount)) return (new Node())->data;
 
-                    Node *node;
+                    Node* node;
 
                     node = &search(index);
 
@@ -611,8 +609,8 @@ extern "C++" {
 
                 void destroy(void) {
 
-                    Node *node;
-                    Node *swap;
+                    Node* node;
+                    Node* swap;
 
                     node = head;
                     swap = nullptr;
@@ -667,8 +665,8 @@ extern "C++" {
 
                 struct Node {
 
-                    struct Node *previous;
-                    struct Node *next;
+                    struct Node* previous;
+                    struct Node* next;
 
                     T data;
 
@@ -683,8 +681,8 @@ extern "C++" {
 
                 struct NodeIterator {
 
-                    Node *begin;
-                    Node *end;
+                    Node* begin;
+                    Node* end;
 
                     NodeIterator(void) {
 
@@ -695,9 +693,9 @@ extern "C++" {
                     ~NodeIterator() {}
                 };
 
-                Node *head;
-                Node *midz;
-                Node *tail;
+                Node* head;
+                Node* midz;
+                Node* tail;
 
                 u64 dataCount;
 
@@ -713,7 +711,7 @@ extern "C++" {
 
                 Node& middleSearchChild(const u64& index, u64 m_size, NodeIterator nodeIterator) {
 
-                    Node *node;
+                    Node* node;
                     u64 middle, i;
 
                     middle = getMiddlePos(m_size);
@@ -752,7 +750,7 @@ extern "C++" {
 
                 Node& middleSearch(const u64& index) {
 
-                    Node *node;
+                    Node* node;
                     NodeIterator nodeIterator;
                     u64 middle, m_size;
 
@@ -881,9 +879,9 @@ extern "C++" {
                 template<typename... Args>
                 List& _concat(List& array, Args&&... arguments) {
 
-                    List *copy;
-                    List *temp;
-                    Node *node;
+                    List* copy;
+                    List* temp;
+                    Node* node;
 
                     copy = &(array.copy());
                     temp = &_concat(arguments...);
@@ -902,8 +900,8 @@ extern "C++" {
 
                 void put(const u64& index, const T& value) {
 
-                    Node *node;
-                    Node *temp;
+                    Node* node;
+                    Node* temp;
 
                     u64 middle;
 
@@ -978,7 +976,7 @@ extern "C++" {
 
                 void push(const T& value) {
 
-                    Node *node;
+                    Node* node;
 
                     node = new Node();
                     node->data = value;
@@ -1006,7 +1004,7 @@ extern "C++" {
 
                 auto getitem(const u64& index) {
 
-                    Node *node;
+                    Node* node;
                     ReturnType<T> rty;
 
                     rty.type = Type::FAIL;
@@ -1024,7 +1022,7 @@ extern "C++" {
 
                 void setitem(const u64& index, const T& value) {
 
-                    Node *node;
+                    Node* node;
 
                     if (index < dataCount) {
 
@@ -1041,7 +1039,7 @@ extern "C++" {
                 void remove(const u64& index) {
 
 
-                    Node *node;
+                    Node* node;
                     u64 middle;
 
                     if (!(index < dataCount)) return;
@@ -1074,8 +1072,8 @@ extern "C++" {
 
                 List& copy(void) {
 
-                    List *m_copy;
-                    Node *node;
+                    List* m_copy;
+                    Node* node;
 
                     node = head;
                     m_copy = new List();
@@ -1110,7 +1108,7 @@ extern "C++" {
                 T shift(void) {
 
                     T value;
-                    Node *node;
+                    Node* node;
 
                     node = head;
                     value = node->data;
@@ -1128,7 +1126,7 @@ extern "C++" {
                 T pop(void) {
 
                     T value;
-                    Node *node;
+                    Node* node;
 
                     node = tail;
                     value = node->data;
@@ -1145,7 +1143,7 @@ extern "C++" {
 
                 auto indexOf(const T& value) {
 
-                    Node *node;
+                    Node* node;
                     ReturnType<u64> rty;
 
                     u64 i;
@@ -1172,9 +1170,9 @@ extern "C++" {
 
                 List& reverse(void) {
 
-                    Node *node;
-                    Node *temp;
-                    Node *swap;
+                    Node* node;
+                    Node* temp;
+                    Node* swap;
 
                     node = head;
 
@@ -1206,7 +1204,7 @@ extern "C++" {
 
                 bool includes(const T& value) {
 
-                    Node *node;
+                    Node* node;
 
                     node = head;
 
@@ -1222,8 +1220,8 @@ extern "C++" {
 
                 List& slice(u64 start, u64 end) {
 
-                    List *copy;
-                    Node *node;
+                    List* copy;
+                    Node* node;
 
                     copy = new List();
                     node = nullptr;
@@ -1264,10 +1262,10 @@ extern "C++" {
                 template<typename... Args>
                 List& splice(u64 start, u64 deleteCount, Args&&... arguments) {
 
-                    List *copy;
+                    List* copy;
 
-                    Node *node;
-                    Node *temp;
+                    Node* node;
+                    Node* temp;
                     
                     u64 middle;
                     
@@ -1315,7 +1313,7 @@ extern "C++" {
 
                     if (!(index < dataCount)) return (new Node())->data;
 
-                    Node *node;
+                    Node* node;
 
                     node = &middleSearch(index);
 
@@ -1350,8 +1348,8 @@ extern "C++" {
 
                 void destroy(void) {
 
-                    Node *node;
-                    Node *temp;
+                    Node* node;
+                    Node* temp;
 
                     node = head;
                     temp = nullptr;
