@@ -19,9 +19,9 @@ typedef double long f128;
 #ifdef __cplusplus
 extern "C++" {
 
-    namespace se {
+    namespace Se {
 
-        namespace abs {
+        namespace Abstract {
 
             enum Type {
 

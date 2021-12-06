@@ -168,6 +168,47 @@ extern "C++" {
                     return false;
                 }
 
+                void remove(const char* key) {
+
+                    Item* item;
+                    Item* prev;
+
+                    // item = new Item;
+                    // prev = new Item;
+
+                    item = first;
+                    prev = item;
+
+                    while (item != nullptr) {
+
+                        if (item->key == key) {
+
+                            if (item == first) {
+
+                                if (last == item) last = item->next; 
+                                first = item->next;
+
+                            } else if (item == last) {
+
+                                if (prev != nullptr) prev->next = nullptr;
+                                last = prev;
+
+                            } else {
+
+                                if (prev != nullptr) prev->next = item->next;
+
+                            }
+
+                            free(item);
+
+                            break;
+                        }
+
+                        prev = item;
+                        item = item->next;
+                    }
+                }
+
                 auto& keys(void) {
 
                     Item* item = nullptr;

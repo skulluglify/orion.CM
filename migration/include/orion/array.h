@@ -5,8 +5,8 @@
 #include"dtype.h"
 #include"debug.h"
 
-#define Type se::abs::Type
-#define ReturnType se::abs::ReturnType
+#define Type Se::Abstract::Type
+#define ReturnType Se::Abstract::ReturnType
 
 #ifdef __cplusplus
 extern "C++" {
@@ -86,42 +86,68 @@ extern "C++" {
 
                 void put(const u64& index, const T& value) {
 
+                    Node *curr;
                     Node *node;
-                    Node *temp;
                     Node *prev;
 
-                    node = &search(index);
-                    temp = new Node();
-                    prev = get_previous_ptr(node);
+                    node = new Node();
+                    prev = nullptr;
 
-                    temp->data = value;
+                    curr = head;
+                    for (u64 _ = 0; _ < index; _++) {
 
-                    temp->next = node;
+                        if (curr->next == nullptr) break;
 
-                    if (prev->next != nullptr) prev->next = temp;
-                    else head = temp;
+                        prev = curr;
+                        curr = curr->next;
+                    }
+
+                    node->data = value;
+                    node->next = curr;
+
+                    if (prev != nullptr) prev->next = node;
+                    else head = node;
 
                     dataCount++;
                 }
 
-                Node *get_previous_ptr(Node *node) {
+                void puts_ptr(Node*) {
 
-                    Node* prev;
-                    prev = head;
+                    return;
 
-                    if (prev != node) {
+                }
 
-                        while (prev->next != node) {
+                template<typename... Args>
+                void puts_ptr(Node* curr, T value, Args&&... arguments) {
 
-                            prev = prev->next;
-                        }
+                    Node* node;
+                    Node* swap;
 
-                    } else {
+                    node = new Node;
+                    node->data = value;
+                    swap = nullptr;
 
-                        prev = nullptr;
+                    dataCount++;
+
+                    if (tail == curr) tail = node;
+
+                    if (curr != nullptr) {
+
+                        swap = curr->next;
+                        curr->next = node;
+                        node->next = swap;
+
+                        puts_ptr(node, arguments...);
+                        return;
                     }
 
-                    return prev;
+                    swap = head;
+                    head = node;
+                    node->next = swap;
+                    
+                    puts_ptr(node, arguments...);
+
+                    return;
                 }
             
             // private
@@ -222,14 +248,30 @@ extern "C++" {
 
                     if (!(index < dataCount)) return;
 
-                    node = &search(index);
-                    prev = get_previous_ptr(node);
+                    node = head;
+                    prev = nullptr;
 
-                    if (head == node) head = node->next;
-                    if (tail == node) {
+                    for (u64 _ = 0; _ < index; _++) {
+                        
+                        if (node->next == nullptr) break;
+
+                        prev = node;
+                        node = node->next;
+                    }
+
+                    if (head == node) {
+
+                        if (tail == node) tail = node->next;
+                        head = node->next;
+
+                    } else if (tail == node) {
+
+                        if (prev != nullptr) prev->next = nullptr;
                         tail = prev;
-                        if (tail != nullptr) tail->next = nullptr;
+                        
+                    
                     } else {
+
                         if (prev != nullptr) prev->next = node->next;
                     }
 
@@ -241,19 +283,25 @@ extern "C++" {
 
                 List& copy(void) {
 
-                    List *m_copy;
+                    List *temp;
                     Node *node;
 
                     node = head;
-                    m_copy = new List();
+                    temp = new List();
 
-                    while (node != nullptr) {
+                    // while (node != nullptr) {
 
-                        m_copy->push(node->data);
+                    //     temp->push(node->data);
+                    //     node = node->next;
+                    // }
+
+                    for (u64 _ = 0; _ < dataCount; _++) {
+
+                        temp->push(node->data);
                         node = node->next;
                     }
 
-                    return *m_copy;
+                    return *temp;
                 }
 
                 template<typename... Args>
@@ -274,47 +322,76 @@ extern "C++" {
                     return *(new Node());
                 }
 
-                T shift(void) {
+                T& shift(void) {
 
                     Node *node;
                     T data;
+
                     node = head;
                     data = node->data;
                     head = node->next;
-                    free(node);
                     dataCount--;
-                    return data;
+                    
+                    free(node);
+                    
+                    T& refdata = *(new T);
+                    refdata = data;
+                    
+                    return refdata;
                 }
                 
-                T pop(void) {
+                T& pop(void) {
 
                     Node *node;
-                    Node *temp;
+                    Node *prev;
                     T data;
+                    
                     node = tail;
-                    temp = head;
+                    prev = head;
                     data = node->data;
-                    while (temp->next != node) {
-                        temp = temp->next;
+                    
+                    while (prev->next != node) {
+                    
+                        prev = prev->next;
+                    
                     }
-                    tail = temp;
+
+                    tail = prev;
                     tail->next = nullptr;
-                    free(node);
                     dataCount--;
-                    return data;
+                    
+                    free(node);
+
+                    T& refdata = *(new T);
+                    refdata = data;
+
+                    return refdata;
                 }
 
                 auto indexOf(const T& value) {
 
                     Node *node;
                     ReturnType<u64> rty;
-                    u64 i;
+                    // u64 i;
 
                     node = head;
                     rty.type = Type::FAIL;
-                    i = 0;
+                    // i = 0;
 
-                    while (node != nullptr) {
+                    // while (node != nullptr) {
+
+                    //     if (node->data == value) {
+
+                    //         rty.type = Type::SUCCESS;
+                    //         rty.data = i;
+                    //         break;
+                    //     }
+
+                    //     node = node->next;
+                    //     i++;
+                    // }
+
+                    for (u64 i = 0; i < dataCount; i++) {
 
                         if (node->data == value) {
 
@@ -324,7 +401,6 @@ extern "C++" {
                         }
 
                         node = node->next;
-                        i++;
                     }
 
                     return rty;
@@ -333,20 +409,29 @@ extern "C++" {
                 List& reverse(void) {
 
                     Node *node;
-                    Node *temp;
+                    Node *prev;
                     Node *swap;
 
                     node = head;
 
-                    temp = nullptr;
+                    prev = nullptr;
                     swap = nullptr;
 
-                    while (node != nullptr) {
+                    // while (node != nullptr) {
 
-                        temp = node;
-                        node = temp->next;
-                        temp->next = swap; 
-                        swap = temp;
+                    //     prev = node;
+                    //     node = node->next;
+                    //     prev->next = swap; 
+                    //     swap = prev;
+
+                    // }
+
+                    for (u64 i = 0; i < dataCount; i++) {
+
+                        prev = node;
+                        node = node->next;
+                        prev->next = swap; 
+                        swap = prev;
 
                     }
 
@@ -363,11 +448,19 @@ extern "C++" {
 
                     node = head;
                     
-                    while (node != nullptr) {
+                    // while (node != nullptr) {
+
+                    //     if (node->data == value) return true;
+
+                    //     node = node->next;
+                    // }
+
+                    for (u64 _ = 0; _ < dataCount; _++) {
 
                         if (node->data == value) return true;
 
                         node = node->next;
+
                     }
 
                     return false;
@@ -375,10 +468,10 @@ extern "C++" {
 
                 List& slice(u64 start, u64 end) {
 
-                    List *copy;
+                    List *temp;
                     Node *node;
 
-                    copy = new List();
+                    temp = new List();
                     node = nullptr;
 
                     if (dataCount < end) end = dataCount;
@@ -391,13 +484,13 @@ extern "C++" {
 
                         while(!!end) {
 
-                            copy->push(node->data);
+                            temp->push(node->data);
                             node = node->next;
                             end--;
                         }
                     }
 
-                    return *copy;
+                    return *temp;
                 }
 
                 void puts(u64) {
@@ -420,39 +513,62 @@ extern "C++" {
                     List *copy;
 
                     Node *node;
-                    Node *temp;
+                    Node *swap;
                     Node *prev;
 
                     copy = new List();
 
                     node = nullptr;
-                    temp = nullptr;
+                    swap = nullptr;
                     prev = nullptr;
 
                     if (dataCount < (start + deleteCount)) deleteCount = dataCount - start;
 
-                    temp = &search(start);
+                    // search 
+                    node = head;
+                    for (u64 _ = 0; _ < start; _++) {
 
-                    while(!!deleteCount) {
+                        if (node->next == nullptr) break;
 
-                        node = temp;
-                        temp = node->next;
-
-                        prev = get_previous_ptr(node);
-
-                        if (head == node) head = node->next;
-                        if (tail == node) {
-                            tail = prev;
-                            tail->next = nullptr;
-                        } else prev->next = node->next;
-
-                        free(node);
-
-                        deleteCount--;
-                        dataCount--;
+                        prev = node;
+                        node = node->next;
                     }
 
-                    puts(start, arguments...);
+                    swap = node;
+
+                    // delete 
+                    dataCount = dataCount - deleteCount;
+                    for (u64 _ = 0; _ < deleteCount; _++) {
+
+                        node = swap;
+                        swap = node->next;
+
+                        if (head == node) {
+
+                            if (tail == node) tail = node->next;
+                            head = node->next;
+
+                        } else if (tail == node) {
+
+                            if (prev != nullptr) prev->next = nullptr;
+                            tail = prev;
+                            
+                        
+                        } else {
+
+                            if (prev != nullptr) prev->next = node->next;
+                        }
+
+                        free(node);
+                    }
+
+                    //
+
+                    // node = swap;
+                    // prev
+
+                    // puts(start, arguments...);
+                    puts_ptr(prev, arguments...);
                     return *copy;
                 }
 
@@ -496,16 +612,25 @@ extern "C++" {
                 void destroy(void) {
 
                     Node *node;
-                    Node *temp;
+                    Node *swap;
 
                     node = head;
-                    temp = nullptr;
+                    swap = nullptr;
 
-                    while(node != nullptr) {
+                    // while(node != nullptr) {
 
-                        temp = node->next;
+                    //     temp = node->next;
+                    //     free(node);
+                    //     node = temp;
+                    // }
+
+                    swap = node;
+
+                    for (u64 _ = 0; _ < dataCount; _++) {
+
+                        node = swap;
+                        swap = node->next;
                         free(node);
-                        node = temp;
                     }
 
                     dataCount = 0;
@@ -516,6 +641,22 @@ extern "C++" {
             // public
         };
     };
+
+    //TODOs
+    /*
+        put
+        puts_ptr
+        remove
+        copy
+        shift
+        pop
+        indexOf
+        reverse
+        includes
+        slice
+        splice
+        destroy
+    */
 
     namespace Ex {
 
